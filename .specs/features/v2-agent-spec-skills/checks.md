@@ -156,6 +156,6 @@ Proof: `uv run pytest tests/test_templates.py::test_templates_freeze_and_compile
 ## Handoff
 
 - **Settled mid-build:** user: "can we format it to be available by github in case we clone (databricks can only close as entry point) and also available as a vscode agent plugin?" - added door 8, AC 25, C29 (AD-028)
-- **Dispatched:** Verifier at `25b2099`
-- **Boundary:** C1-C30 closed at `25b2099`
+- **Dispatched:** Verifier at `7d4c049` - returned, 7 findings, all closed at `f6f3b2a`
+- **Boundary:** C1-C31 closed at `f6f3b2a`
 - **Abandoned:** none

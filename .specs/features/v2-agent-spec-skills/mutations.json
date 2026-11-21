@@ -10,7 +10,7 @@
     "file": "skills/agent-spec-experiment/scripts/experiment.py",
     "old": "== \"regression\" or ok is None:",
     "new": "== \"never\" or ok is None:",
-    "proof": "uv run pytest tests/test_deliver.py::test_graduation_streak",
+    "proof": "uv run pytest tests/test_deliver.py::test_regression_cases_do_not_count_toward_graduation",
     "label": "C18: regression Cases count toward the graduation streak"
   },
   {
