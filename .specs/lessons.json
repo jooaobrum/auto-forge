@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "promote_threshold": 2,
+  "window_days": 45,
+  "quarantine_threshold": 2,
+  "next_id": 8,
+  "lessons": [
+    {
+      "id": "L-001",
+      "key": "surviving_mutant::test a range rule at both bounds and one past each not only well inside it",
+      "text": "Test a range rule at both bounds and one past each, not only well inside it",
+      "signal": "surviving_mutant",
+      "scope": "contract",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lanes/contract.py:82 (contract)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-002",
+      "key": "surviving_mutant::when a rule needs at least one item to count test an input where every item is excluded",
+      "text": "When a rule needs at least one item to count, test an input where every item is excluded",
+      "signal": "surviving_mutant",
+      "scope": "results",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lanes/results.py:67 (results)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-003",
+      "key": "surviving_mutant::when an exemption names one owner s folder put a sibling owner s file in the test input",
+      "text": "When an exemption names one owner's folder, put a sibling owner's file in the test input",
+      "signal": "surviving_mutant",
+      "scope": "scope",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lanes/gate.py:58 (scope)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-004",
+      "key": "ac_gap::read git path lists with z and no renames test a moved file and a path with a space",
+      "text": "Read git path lists with -z and --no-renames; test a moved file and a path with a space",
+      "signal": "ac_gap",
+      "scope": "scope",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lanes/gate.py:56 (scope)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-005",
+      "key": "ac_gap::quote values read from csv as text test a value with a leading zero",
+      "text": "Quote values read from CSV as text; test a value with a leading zero",
+      "signal": "ac_gap",
+      "scope": "contract",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "src/lanes/contract.py:138 (contract)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-006",
+      "key": "spec_precision_gap::prove a staleness rule by changing the real input it hashes not by overwriting the stored hash",
+      "text": "Prove a staleness rule by changing the real input it hashes, not by overwriting the stored hash",
+      "signal": "spec_precision_gap",
+      "scope": "select",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "tests/test_select.py:46 (select)"
+      ],
+      "created": "2026-11-21T10:45:21Z",
+      "last_seen": "2026-11-21T10:45:21Z"
+    },
+    {
+      "id": "L-007",
+      "key": "spec_precision_gap::prove a mean over a set with at least two members whose values straddle the bound",
+      "text": "Prove a mean over a set with at least two members whose values straddle the bound",
+      "signal": "spec_precision_gap",
+      "scope": "gate",
+      "status": "candidate",
+      "features": [
+        "mvp-lanes"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "tests/test_gate.py:136 (gate)"
+      ],
+      "created": "2026-11-21T10:45:22Z",
+      "last_seen": "2026-11-21T10:45:22Z"
+    }
+  ]
+}
