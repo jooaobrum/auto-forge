@@ -15,17 +15,18 @@ def frontmatter(path) -> dict:
 def test_skill_frontmatter_and_shared_parser():
     names = {p.name for p in SKILL_DIRS}
     assert names == {"agent-spec-router", "agent-spec-grilling", "agent-spec-writer", "agent-spec-lean",
-                     "agent-spec-pipeline", "agent-spec-experiment", "data-databricks-sql", "ml-mlflow-log"}
+                     "agent-spec-pipeline", "agent-spec-experiment", "agent-spec-modeling", "data-databricks-sql",
+                     "ml-mlflow-log"}
     for folder in SKILL_DIRS:
         meta = frontmatter(folder / "SKILL.md")
         assert meta["name"] == folder.name
         assert "Use when" in meta["description"] or "Use first" in meta["description"], folder.name
     copies = [p.read_text() for p in SKILLS.glob("*/scripts/spec_md.py")]
-    assert len(copies) == 3 and len(set(copies)) == 1
+    assert len(copies) == 4 and len(set(copies)) == 1
 
 
 def test_load_points_and_domain_skills():
-    for lane in ("agent-spec-lean", "agent-spec-pipeline", "agent-spec-experiment"):
+    for lane in ("agent-spec-lean", "agent-spec-pipeline", "agent-spec-experiment", "agent-spec-modeling"):
         text = (SKILLS / lane / "SKILL.md").read_text()
         points = text.split("## Load points")[1].split("\n## ")[0]
         assert ".specs/LAB.md" in points and "## Domain skills" in points, lane

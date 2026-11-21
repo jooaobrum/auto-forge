@@ -16,3 +16,4 @@ exp() { "$PY" "$SK/agent-spec-experiment/scripts/experiment.py" "$@"; }
 contract() { "$PY" "$SK/agent-spec-pipeline/scripts/contract.py" "$@"; }
 route() { "$PY" "$SK/agent-spec-router/scripts/route.py" "$@"; }
 expect_fail() { if "$@"; then echo "expected a failing gate"; exit 1; fi; }
+modeling() { "$PY" "$SK/agent-spec-modeling/scripts/$1.py" "${@:2}"; }
