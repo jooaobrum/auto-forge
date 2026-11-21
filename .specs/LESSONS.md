@@ -56,6 +56,30 @@ Seen once or not yet corroborated. Tracked, not trusted.
 - evidence: tests/test_gate.py:136 (gate)
 - last seen: 2026-11-21T10:45:22Z
 
+### L-008 - When values merge cell by cell, give every column a value on both sides in the test
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `spec` · harmful: 0
+- features: v2-agent-spec-skills
+- evidence: skills/agent-spec-experiment/scripts/lab.py (spec)
+- last seen: 2026-11-21T13:54:51Z
+
+### L-009 - Prove a template by filling it exactly as shown and running the parser it feeds
+- signal: `spec_precision_gap` · recurrence: 1 feature(s) · scope: `templates` · harmful: 0
+- features: v2-agent-spec-skills
+- evidence: skills/agent-spec-experiment/references/spec-agent.md (templates)
+- last seen: 2026-11-21T13:54:51Z
+
+### L-010 - Call every command that must refuse after a failed step right after that failure
+- signal: `surviving_mutant` · recurrence: 1 feature(s) · scope: `route` · harmful: 0
+- features: v2-agent-spec-skills
+- evidence: skills/agent-spec-router/scripts/route.py (route)
+- last seen: 2026-11-21T13:54:51Z
+
+### L-011 - Test a parser that reads the first table with a second table in the same section
+- signal: `ac_gap` · recurrence: 1 feature(s) · scope: `parsing` · harmful: 0
+- features: v2-agent-spec-skills
+- evidence: skills/agent-spec-experiment/scripts/spec_md.py (parsing)
+- last seen: 2026-11-21T13:54:51Z
+
 ## Quarantined (failed when applied - ignore)
 
 A confirmed lesson that recurred alongside failure. Kept for the maintainer to review.

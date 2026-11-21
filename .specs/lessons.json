@@ -3,7 +3,7 @@
   "promote_threshold": 2,
   "window_days": 45,
   "quarantine_threshold": 2,
-  "next_id": 8,
+  "next_id": 12,
   "lessons": [
     {
       "id": "L-001",
@@ -130,6 +130,78 @@
       ],
       "created": "2026-11-21T10:45:22Z",
       "last_seen": "2026-11-21T10:45:22Z"
+    },
+    {
+      "id": "L-008",
+      "key": "surviving_mutant::when values merge cell by cell give every column a value on both sides in the test",
+      "text": "When values merge cell by cell, give every column a value on both sides in the test",
+      "signal": "surviving_mutant",
+      "scope": "spec",
+      "status": "candidate",
+      "features": [
+        "v2-agent-spec-skills"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "skills/agent-spec-experiment/scripts/lab.py (spec)"
+      ],
+      "created": "2026-11-21T13:54:51Z",
+      "last_seen": "2026-11-21T13:54:51Z"
+    },
+    {
+      "id": "L-009",
+      "key": "spec_precision_gap::prove a template by filling it exactly as shown and running the parser it feeds",
+      "text": "Prove a template by filling it exactly as shown and running the parser it feeds",
+      "signal": "spec_precision_gap",
+      "scope": "templates",
+      "status": "candidate",
+      "features": [
+        "v2-agent-spec-skills"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "skills/agent-spec-experiment/references/spec-agent.md (templates)"
+      ],
+      "created": "2026-11-21T13:54:51Z",
+      "last_seen": "2026-11-21T13:54:51Z"
+    },
+    {
+      "id": "L-010",
+      "key": "surviving_mutant::call every command that must refuse after a failed step right after that failure",
+      "text": "Call every command that must refuse after a failed step right after that failure",
+      "signal": "surviving_mutant",
+      "scope": "route",
+      "status": "candidate",
+      "features": [
+        "v2-agent-spec-skills"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "skills/agent-spec-router/scripts/route.py (route)"
+      ],
+      "created": "2026-11-21T13:54:51Z",
+      "last_seen": "2026-11-21T13:54:51Z"
+    },
+    {
+      "id": "L-011",
+      "key": "ac_gap::test a parser that reads the first table with a second table in the same section",
+      "text": "Test a parser that reads the first table with a second table in the same section",
+      "signal": "ac_gap",
+      "scope": "parsing",
+      "status": "candidate",
+      "features": [
+        "v2-agent-spec-skills"
+      ],
+      "recurrence": 1,
+      "harmful": 0,
+      "evidence": [
+        "skills/agent-spec-experiment/scripts/spec_md.py (parsing)"
+      ],
+      "created": "2026-11-21T13:54:51Z",
+      "last_seen": "2026-11-21T13:54:51Z"
     }
   ]
 }
