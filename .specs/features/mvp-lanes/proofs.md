@@ -1,6 +1,6 @@
 # mvp-lanes proofs
 
-**HEAD**: d0ca44d
+**HEAD**: 927e3e0
 **Tree**: clean
 **Result**: 41 pass, 0 fail; mutations 3 killed, 0 not
 
