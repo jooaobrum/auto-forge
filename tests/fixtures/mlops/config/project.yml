@@ -1,0 +1,23 @@
+platform: databricks
+project: poc_secom
+environments:
+  dev:  {catalog: workspace, schema: poc_secom_dev}
+  qa:   {catalog: workspace, schema: poc_secom_qa}
+  prod: {catalog: workspace, schema: poc_secom}
+inputs:
+  secom: workspace.curated.secom
+model:
+  name: secom_fail
+  task: binary
+  threshold: 0.62
+pipelines: [features, train, score, monitor]
+mlflow:
+  experiment: /Shared/ds/poc_secom
+  registry: databricks-uc
+  required_tags: [git_commit, config_env, round, experiment_id, training_tables]
+monitoring:
+  inference_table: inference
+  metrics: [pr_auc, positive_rate, score_mean]
+  drift: {baseline: training, threshold: 0.2}
+  schedule: daily
+  alert: ds-alerts

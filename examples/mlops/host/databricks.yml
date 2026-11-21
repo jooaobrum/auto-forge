@@ -1,0 +1,12 @@
+bundle:
+  name: churn
+include:
+  - resources/*.yml
+targets:
+  dev:
+    mode: development
+    default: true
+  qa:
+    mode: production
+  prod:
+    mode: production

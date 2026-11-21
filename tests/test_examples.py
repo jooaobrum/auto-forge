@@ -13,9 +13,9 @@ def run(script: str) -> subprocess.CompletedProcess:
 def test_run_all():
     done = run("examples/run_all.sh")
     assert done.returncode == 0, done.stdout + done.stderr
-    for profile in ("app", "pipeline", "model", "agent", "modeling"):
+    for profile in ("app", "pipeline", "model", "agent", "modeling", "mlops"):
         assert f"=== {profile}" in done.stdout
-    assert done.stdout.count("delivered: .specs/features/") == 5
+    assert done.stdout.count("delivered: .specs/features/") == 6
     for path in (ROOT / "examples").rglob("*"):
         assert path.name != "lanes.json", path
         if path.suffix == ".sh":
@@ -35,3 +35,10 @@ def test_modeling_gates_catch_the_oot_shortcut():
     assert done.returncode == 0, done.stdout + done.stderr
     assert "FAIL [R11] the round's code references the OOT period" in done.stdout
     assert "validate_verification secom: pass" in done.stdout
+
+
+def test_mlops_gate_names_what_production_lacks():
+    done = run("examples/mlops/run.sh")
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert "FAIL [D7] .specs/prod/trace.json not found" in done.stdout
+    assert "validate_prod churn-mlops: pass" in done.stdout
