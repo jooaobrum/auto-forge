@@ -1,0 +1,5 @@
+order_id,status,version
+1,open,1
+1,closed,2
+2,open,1
+3,cancelled,1

@@ -1,0 +1,14 @@
+{
+  "metrics": {"accuracy": {"pass_at": 0.92}, "train_seconds": {"budget_pct": 20}},
+  "profiles": {
+    "model": {
+      "lane": "research",
+      "metrics": ["accuracy", "train_seconds"],
+      "surface": {"param:threshold": {"paths": ["model/config.json"], "affects_all": true}},
+      "default_edit_scope": ["model/config.json"],
+      "k": {"target": 3, "affected": 3, "stable": 1}
+    }
+  },
+  "max_variants": 3,
+  "budget_tokens": 0
+}

@@ -1,0 +1,27 @@
+apiVersion: v3.0.0
+kind: DataContract
+id: orders
+version: 1.0.0
+status: active
+schema:
+  - name: orders
+    properties:
+      - name: order_id
+        logicalType: integer
+        required: true
+        unique: true
+      - name: status
+        logicalType: string
+        required: true
+        quality:
+          - metric: invalidValues
+            arguments:
+              validValues: [open, closed, cancelled]
+      - name: loaded_at
+        logicalType: timestamp
+    quality:
+      - metric: rowCount
+        mustBeBetween: [1, 1000]
+      - metric: freshness
+        column: loaded_at
+        maxAgeHours: 24
