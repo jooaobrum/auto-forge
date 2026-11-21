@@ -1,4 +1,4 @@
-# agent-spec
+# auto-forge
 
 Skills that take any piece of work - app, pipeline, model or agent - from whatever context the user gives to delivery, routing it to the lane whose proof can close it.
 

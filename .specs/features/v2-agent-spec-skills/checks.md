@@ -113,7 +113,7 @@ Proof: `uv run pytest tests/test_lean.py::test_agent_spec_lean_selftest`
 
 ### S7 - Installable from anywhere
 
-**C29** - `plugin.json` has the Agent Plugins 1.0 `$schema`, name `agent-spec` and the same semantic version as `.claude-plugin/plugin.json`; the marketplace lists `agent-spec` at `./`; every skill folder is kebab-case with a `SKILL.md` (AC 25)
+**C29** - `plugin.json` has the Agent Plugins 1.0 `$schema`, name `auto-forge` and the same semantic version as `.claude-plugin/plugin.json`; the marketplace lists `auto-forge` at `./`; every skill folder is kebab-case with a `SKILL.md` (AC 25)
 Proof: `uv run pytest tests/test_packaging.py::test_plugin_manifests_and_marketplace`
 
 **C30** - `route.py` freezes only an approved spec, judges JUnit (a failure named, skipped tests not counted, none run fails) and delivers only after a passing gate, with the goal, gate and commits (door 9)

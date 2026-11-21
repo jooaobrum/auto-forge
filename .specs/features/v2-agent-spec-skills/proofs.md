@@ -1,6 +1,6 @@
 # v2-agent-spec-skills proofs
 
-**HEAD**: 88ffcc9
+**HEAD**: c112a6e
 **Tree**: clean
 **Result**: 37 pass, 0 fail; mutations 3 killed, 0 not
 

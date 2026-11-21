@@ -1,7 +1,21 @@
 {
-  "name": "agent-spec",
-  "description": "Spec-driven work for apps, data pipelines, ML models and agents: one router, a build lane proven by end-to-end tests and data contracts, a research lane judged per Case on a dataset.",
-  "version": "0.2.0",
+  "name": "auto-forge",
+  "description": "Spec-driven agent workflows for apps, data pipelines, ML models and agents. Bring a spec or just context; auto-forge makes it actionable and routes it to the lane whose proof can close it - end-to-end tests, data contracts, or per-case evals on a dataset.",
+  "version": "0.3.0",
+  "author": {
+    "name": "jooaobrum",
+    "url": "https://github.com/jooaobrum"
+  },
+  "homepage": "https://github.com/jooaobrum/auto-forge",
+  "repository": "https://github.com/jooaobrum/auto-forge",
   "license": "CC-BY-4.0",
-  "keywords": ["spec-driven", "evals", "data-contracts", "experiments", "agents"]
+  "keywords": [
+    "spec-driven",
+    "evals",
+    "data-contracts",
+    "experiments",
+    "agents",
+    "databricks",
+    "mlflow"
+  ]
 }

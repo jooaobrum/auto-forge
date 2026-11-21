@@ -1,7 +1,7 @@
 [project]
-name = "lanes"
-version = "0.2.0"
-description = "agent-spec skills: route any work to the lane whose proof can close it."
+name = "auto-forge"
+version = "0.3.0"
+description = "Spec-driven agent workflows for apps, data pipelines, ML models and agents."
 requires-python = ">=3.9"
 dependencies = []
 

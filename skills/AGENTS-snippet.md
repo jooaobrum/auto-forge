@@ -1,4 +1,4 @@
-## agent-spec
+## auto-forge
 
 Every piece of work starts with **agent-spec-router** (`skills/agent-spec-router/SKILL.md`): give it a spec, a
 design doc, a problem or just context. It grills when the context is not actionable, writes `.specs/LAB.md`

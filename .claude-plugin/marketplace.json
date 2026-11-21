@@ -1,11 +1,14 @@
 {
-  "name": "agent-spec",
-  "owner": {"name": "agent-spec maintainers"},
+  "name": "auto-forge",
+  "owner": {
+    "name": "jooaobrum",
+    "url": "https://github.com/jooaobrum"
+  },
   "plugins": [
     {
-      "name": "agent-spec",
+      "name": "auto-forge",
       "source": "./",
-      "description": "Spec-driven work for apps, data pipelines, ML models and agents, routed by agent-spec-router."
+      "description": "Spec-driven agent workflows for apps, data pipelines, ML models and agents. Bring a spec or just context; auto-forge makes it actionable and routes it to the lane whose proof can close it - end-to-end tests, data contracts, or per-case evals on a dataset."
     }
   ]
 }

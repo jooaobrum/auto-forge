@@ -92,7 +92,7 @@ None - no network route; the scripts' commands and exit codes are door 6.
 | 6. Script commands and exit codes | `python3 <skill-dir>/scripts/experiment.py <freeze\|baseline\|select\|gate\|budget\|deliver> <slug>`, `python3 <skill-dir>/scripts/contract.py <compile\|gate> <slug>`; exit `0` ok, `1` gate fail, `2` invalid input, `3` variant cap, `4` budget spent - ask the user | an installed `rl` CLI - the engineer does not run commands, and a pip install is a step the agent cannot always take on Databricks |
 | 7. Spec sections the scripts read | `**Profile**:`, `**Lane**:`, `**Approved**:` lines; tables under `## Cases`, `## Metrics`, `## Surface`, `## Data contract`, `## Golden rows`; lists under `## Edit Scope`; optional `**Budget**:`, `**Variants**:`, `**Dataset**:` lines; `.specs/LAB.md` holds the same `## Metrics` and `## Surface` tables as project defaults | JSON beside the spec - the engineer said they will not fill JSON, and two files drift |
 
-| 8. Plugin packaging | the repo root is the plugin: `skills/<name>/SKILL.md`, `plugin.json` with `"$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"` and `"name": "agent-spec"` (VS Code, Copilot), `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` listing `agent-spec` with `"source": "./"` (Claude Code); Databricks clones the repo as a Git folder | a copy of `skills/` per tool - three copies drift, and Databricks can only start from a cloned repo |
+| 8. Plugin packaging | the repo root is the plugin: `skills/<name>/SKILL.md`, `plugin.json` with `"$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"` and `"name": "auto-forge"` (VS Code, Copilot; renamed from `agent-spec` by AD-029), `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` listing `auto-forge` with `"source": "./"` (Claude Code); Databricks clones the repo as a Git folder | a copy of `skills/` per tool - three copies drift, and Databricks can only start from a cloned repo |
 | 9. Router bookkeeping script | `agent-spec-router/scripts/route.py <freeze\|junit\|deliver> <slug>`; build work writes `gate.json` (from `route.py junit` or `contract.py gate`) before `route.py deliver` | delivery inside agent-spec-lean - it owns verification, not the hand-off record every lane shares |
 
 - Nothing else in this change is hard to reverse
@@ -169,7 +169,7 @@ The team installs it from GitHub in Claude Code, VS Code and Copilot, or clones 
 
 **Acceptance Criteria**
 
-25. The repo SHALL carry `plugin.json` (Agent Plugins 1.0 `$schema`, `name` `agent-spec`, a semantic `version`), `.claude-plugin/plugin.json` with the same name and version, and `.claude-plugin/marketplace.json` listing `agent-spec` with source `./`; every skill folder name SHALL be kebab-case with a `SKILL.md`
+25. The repo SHALL carry `plugin.json` (Agent Plugins 1.0 `$schema`, `name` `auto-forge`, a semantic `version`), `.claude-plugin/plugin.json` with the same name and version, and `.claude-plugin/marketplace.json` listing `auto-forge` with source `./`; every skill folder name SHALL be kebab-case with a `SKILL.md`
 
 ## Out of scope
 
