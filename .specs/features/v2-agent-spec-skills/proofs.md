@@ -1,8 +1,8 @@
 # v2-agent-spec-skills proofs
 
-**HEAD**: f6f3b2a
+**HEAD**: 88ffcc9
 **Tree**: clean
-**Result**: 37 pass, 0 fail; mutations 2 killed, 1 not
+**Result**: 37 pass, 0 fail; mutations 3 killed, 0 not
 
 | Check | Proof | Ran | Passed | Result |
 | --- | --- | --- | --- | --- |
@@ -49,5 +49,5 @@
 | Mutation | Location | Killed |
 | --- | --- | --- |
 | C5: LAB guardrail cell wins over the spec's | `skills/agent-spec-experiment/scripts/lab.py:179` | yes |
-| C18: regression Cases count toward the graduation streak | `skills/agent-spec-experiment/scripts/experiment.py:299` | no |
+| C18: regression Cases count toward the graduation streak | `skills/agent-spec-experiment/scripts/experiment.py:299` | yes |
 | C30: route.py delivers after a failed gate | `skills/agent-spec-router/scripts/route.py:92` | yes |
