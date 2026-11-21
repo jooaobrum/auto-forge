@@ -126,3 +126,27 @@ _Avoid_: adapter, report, output
 **Data contract**:
 The schema and quality rules a pipeline's output dataset promises its readers, each rule a Case.
 _Avoid_: expectations, schema file, validation
+
+## Data science (planned)
+
+**Problem**:
+The section of LAB.md the router fills before any model work: target, label rule, prediction time, cost of false positives and false negatives, metric.
+_Avoid_: target doc, discovery
+
+**Split lock**:
+The file fixing the train, valid and OOT time windows and their row counts before any EDA or training.
+_Avoid_: split config, holdout file
+
+**OOT**:
+Out of time: the latest window of the Split lock, read only by the Verification.
+_Avoid_: test set
+
+**Round**:
+One unit of work in the modeling lane: a baseline, then iterations of one change each from an approved backlog, closed by a Verification on OOT.
+_Avoid_: sprint, hill climb, Experiment
+
+**Champion**:
+The model version serving in production under the production alias.
+
+**Challenger**:
+A new model version that takes the Champion's alias only when no slice regresses and the user agrees.

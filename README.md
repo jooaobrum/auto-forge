@@ -21,6 +21,11 @@ In the research lane nothing hides in an average: every case that passed before 
 variant that improves recall by spending +100k tokens per turn fails its guardrail, edits outside the agreed
 files fail the gate, and the agent stops and asks you when the token budget runs out.
 
+**Planned, not built yet:** two lanes take a model from a problem to production - `agent-spec-modeling`
+(a locked split, rounds of one change each, verified on out-of-time data) and `agent-spec-mlops` (production
+code, then a per-slice promotion of challenger over champion). See
+[Data science end to end](docs/workflow.md#data-science-end-to-end-planned).
+
 **New here? Start with [docs/onboarding.md](docs/onboarding.md).** How the workflow runs end to end:
 [docs/workflow.md](docs/workflow.md).
 
