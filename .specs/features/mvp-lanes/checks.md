@@ -179,6 +179,6 @@ Proof: `uv run pytest tests/test_select.py::test_reselect_same_variant`
 ## Handoff
 
 - **Settled mid-build:** none
-- **Dispatched:** Verifier at `91e53f9`
-- **Boundary:** C1-C36 closed at `91e53f9`
+- **Dispatched:** Verifier at `0bb706d` - returned, 9 findings, all closed at `d0ca44d`
+- **Boundary:** C1-C36 closed at `d0ca44d`
 - **Abandoned:** none
