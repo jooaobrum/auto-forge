@@ -10,6 +10,10 @@ import re
 APPROVED = re.compile(r"^\*\*Approved\*\*:\s*(?!<)\S", re.MULTILINE)
 YES = {"yes", "y", "true", "x", "✓", "1"}
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+CONFIRMED = re.compile(r'^\d{4}-\d{2}-\d{2}\s+-\s+user:\s*"[^"]*\S[^"]*"$')
+METRICS = ("pr_auc", "roc_auc", "f1", "macro_f1", "accuracy", "log_loss", "brier", "rmse", "mae")
+LOWER_IS_BETTER = ("log_loss", "brier", "rmse", "mae")
+PROBLEM_FIELDS = ("Target", "Label rule", "Prediction time", "Cost of FP", "Cost of FN", "Metric")
 
 
 def strip_comments(text: str) -> str:
@@ -74,3 +78,21 @@ def split_list(cell: str) -> list[str]:
 
 def is_yes(cell: str) -> bool:
     return cell.strip().lower() in YES
+
+
+def problem_findings(text: str, fields: tuple = PROBLEM_FIELDS) -> list[str]:
+    """What the `## Problem` section of a LAB.md lacks: each field filled, a known metric, the user's confirmation."""
+    body = section(text, "Problem")
+    if not body:
+        return ["no ## Problem section"]
+    findings = []
+    for name in fields:
+        value = field(body, name)
+        if not value or value.startswith("<"):
+            findings.append(f"**{name}**: missing or not filled")
+    metric = field(body, "Metric").lower()
+    if "Metric" in fields and metric and not metric.startswith("<") and metric not in METRICS:
+        findings.append(f"**Metric**: {metric} is not one of {', '.join(METRICS)}")
+    if not CONFIRMED.match(field(body, "Confirmed")):
+        findings.append('**Confirmed**: <date> - user: "<their words>" - only the user confirms the Problem')
+    return findings

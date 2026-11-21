@@ -14,7 +14,7 @@ a piece of work, `.specs/features/<slug>/spec.md`).
 Read `.specs/LAB.md`. When it does not exist, write it now, from the repo and by asking only what the repo
 does not answer, and confirm each part with the user:
 
-```markdown
+````markdown
 # LAB
 
 **Eval command**: <how the dataset eval runs, e.g. `uv run python -m minds.eval --cases {cases} --k {k}`>
@@ -45,10 +45,35 @@ does not answer, and confirm each part with the user:
 | --- | --- |
 | plan | data-databricks-sql |
 | verify | ml-mlflow-log |
+
+## Problem
+
+<!-- model work only -->
+**Target**: <the event, in business words, and why it matters>
+**Label rule**: <the exact condition on source columns that makes a row positive>
+**Prediction time**: <when the model runs and what is known at that moment>
+**Exclusions**: <rows kept out of training and evaluation, and why, or "none">
+**Cost of FP**: <what a false positive costs>
+**Cost of FN**: <what a false negative costs>
+**Metric**: <pr_auc, roc_auc, f1, macro_f1, accuracy, log_loss, brier, rmse or mae>
+**Label check**: `.specs/label_check.json`
+**Confirmed**: <only in the user's words: YYYY-MM-DD - user: "...">
+
+```sql
+-- the label rule over the source, compared with the stored label
+SELECT count(*) AS rows, sum(CASE WHEN <rule> = label THEN 0 ELSE 1 END) AS mismatches FROM <source>
 ```
+````
 
 Pick the domain skills from the installed skills by their descriptions (load points: **plan**, **work**,
 **verify**). LAB.md is yours to keep current; the user never edits it.
+
+**The Problem, for model work.** Before any model work (Profile `model`) whose `## Problem` is missing,
+interview the user one question at a time ([references/problem.md](references/problem.md)) and write it.
+Run the label rule's SQL against the source and save `{"rows": <n>, "mismatches": <n>}` to the Label check
+file. Show the Problem and ask the user to confirm it; write `**Confirmed**:` with their words only. Then
+`python3 <skill-dir>/scripts/route.py problem` must exit 0. A changed Target is a new split: say so before
+you change a confirmed Problem.
 
 ## 2. Is the context actionable?
 
