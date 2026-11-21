@@ -41,6 +41,11 @@ def literal(value) -> str:
         return "'" + text.replace("'", "''") + "'"
 
 
+def quote(value) -> str:
+    """A text literal; golden rows come from CSV, so a value like `007` stays text and the engine coerces it."""
+    return "'" + str(value).replace("'", "''") + "'"
+
+
 def _rule_kind(rule: dict) -> str:
     if rule.get("type") == "sql":
         return "sql"
@@ -135,7 +140,7 @@ def compile_contract(contract: dict, dialect_name: str = "spark", golden: list[d
         first = datasets[0]
         table = dialect.ident(first.get("physicalName") or first["name"])
         for index, row in enumerate(golden, start=1):
-            where = " AND ".join(f"{dialect.ident(k)} = {literal(v)}" for k, v in row.items())
+            where = " AND ".join(f"{dialect.ident(k)} = {quote(v)}" for k, v in row.items())
             add(f"{first['name']}.golden.{index}",
                 f"(SELECT CASE WHEN EXISTS (SELECT 1 FROM {table} WHERE {where}) THEN 0 ELSE 1 END)")
     case_col = dialect.ident("case")

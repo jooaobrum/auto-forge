@@ -51,6 +51,7 @@ Proof: `uv run pytest tests/test_select.py::test_affects_all`
 
 **C12** - A Baseline recorded under a different content hash of its touched paths at the frozen commit is listed as stale; an unchanged one is not (AC 10)
 Proof: `uv run pytest tests/test_select.py::test_stale_baseline`
+Proof: `uv run pytest tests/test_select.py::test_working_tree_edits_do_not_make_a_baseline_stale`
 
 **C13** - A run passes only if every `pass_at` metric meets it; 2 of 3 → passed, 1 of 3 → failed, 1 of 1 → passed, 1 of 2 → failed (AC 11)
 Proof: `uv run pytest tests/test_gate.py::test_majority_rule`
@@ -63,6 +64,7 @@ Proof: `uv run pytest tests/test_gate.py::test_guardrail_budget_boundary`
 
 **C16** - The gate exits `1` unless the Target Metric's mean over Target Cases rose by at least `min_delta`; exactly `min_delta` passes (AC 14)
 Proof: `uv run pytest tests/test_gate.py::test_target_must_improve`
+Proof: `uv run pytest tests/test_gate.py::test_target_mean_over_several_cases`
 
 **C17** - A selected Case with fewer runs than its k makes the gate exit `1` naming the Case and the runs missing (AC 15)
 Proof: `uv run pytest tests/test_gate.py::test_missing_runs_fail`
@@ -80,6 +82,7 @@ Proof: `uv run pytest tests/test_gate.py::test_regression_only`
 
 **C21** - An in-scope edit gives no finding; a changed `tools/sql.py` and a new untracked file outside scope are each listed and the gate exits `1`; files under `.lanes/work/<slug>/` and `.lanes/baseline/` are ignored (AC 19)
 Proof: `uv run pytest tests/test_scope.py::test_outside_scope_is_named`
+Proof: `uv run pytest tests/test_scope.py::test_moving_a_file_into_scope_names_the_old_path`
 
 **C22** - With no `edit_scope` in `experiment.json` the Profile's `default_edit_scope` decides (AC 20)
 Proof: `uv run pytest tests/test_scope.py::test_default_edit_scope`
@@ -126,6 +129,7 @@ Proof: `uv run pytest tests/test_examples.py::test_agent_regression_is_named`
 
 **C33** - `rl freeze` exits `2` when the plan has no `**Approved**:` line or the folder is not a git repo, and records the start commit otherwise (AC 25)
 Proof: `uv run pytest tests/test_freeze.py::test_freeze_requires_approval`
+Proof: `uv run pytest tests/test_freeze.py::test_freeze_outside_git_exits_2`
 
 **C34** - `skills/shape/SKILL.md` and `skills/lanes/SKILL.md` carry Agent Skills frontmatter (`name`, `description`) and name every CLI command they rely on (AC 29)
 Proof: `uv run pytest tests/test_skills.py::test_skills_frontmatter_and_commands`

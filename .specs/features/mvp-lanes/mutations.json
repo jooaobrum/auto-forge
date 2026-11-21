@@ -1,0 +1,23 @@
+[
+  {
+    "file": "src/lanes/contract.py",
+    "old": "BETWEEN {int(low)} AND {int(high)} THEN 0",
+    "new": "BETWEEN {int(low)} AND {int(high) - 1} THEN 0",
+    "proof": "uv run pytest tests/test_contract.py::test_violation_counts_on_sqlite",
+    "label": "rowCount upper bound shifted down by one (100 rows in [1, 100] fails)"
+  },
+  {
+    "file": "src/lanes/results.py",
+    "old": "if case.find(\"skipped\") is not None:",
+    "new": "if False:",
+    "proof": "uv run pytest tests/test_gate_build.py::test_junit_gate",
+    "label": "a skipped JUnit test is counted as a passed run"
+  },
+  {
+    "file": "src/lanes/gate.py",
+    "old": "    own = f\".lanes/work/{work.slug}/\"",
+    "new": "    own = \".lanes/work/\"",
+    "proof": "uv run pytest tests/test_scope.py::test_outside_scope_is_named",
+    "label": "Edit Scope exempts every work folder, not only .lanes/work/<slug>/"
+  }
+]

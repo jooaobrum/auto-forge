@@ -134,3 +134,15 @@ def test_malformed_results_file_exits_2(host):
     code, out = host.rl("gate", "exp", "--variant", "v1")
     assert code == 2
     assert "notes.txt" in out
+
+
+@pytest.mark.parametrize("q02_after, passes", [(0.39, False), (0.4, True)])
+def test_target_mean_over_several_cases(host, q02_after, passes):
+    base = [run("q01", n, recall=0.5) for n in (1, 2, 3)] + [run("q02", n, recall=0.5) for n in (1, 2, 3)]
+    frozen_experiment(host, base, target_cases=["q01", "q02"], min_delta=0.2)
+    host.rl("select", "exp", "--variant", "v1")
+    host.runs("exp", "v1", "q01", [run("q01", n, recall=1.0) for n in (1, 2, 3)])
+    host.runs("exp", "v1", "q02", [run("q02", n, recall=q02_after) for n in (1, 2, 3)])
+    code, out = host.rl("gate", "exp", "--variant", "v1")
+    assert code == (0 if passes else 1), out
+    assert ("FAIL target cited_recall" in out) is not passes, out

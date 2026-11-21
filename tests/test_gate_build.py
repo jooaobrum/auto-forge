@@ -67,6 +67,11 @@ def test_junit_gate(host):
     host.write(".lanes/work/a/runs/main/junit.xml", JUNIT.format(cases='<testcase classname="e2e" name="login"/>'))
     code, out = host.rl("gate", "a")
     assert code == 0, out
+    skipped = '<testcase classname="e2e" name="later"><skipped/></testcase>'
+    host.write(".lanes/work/a/runs/main/junit.xml", JUNIT.format(cases=skipped))
+    code, out = host.rl("gate", "a")
+    assert code == 1
+    assert "no test ran" in out and "e2e.later" not in out
     host.write(".lanes/work/a/runs/main/junit.xml", JUNIT.format(cases=""))
     code, out = host.rl("gate", "a")
     assert code == 1

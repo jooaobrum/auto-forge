@@ -40,15 +40,16 @@ def test_stale_baseline(host):
     code, _ = host.rl("select", "exp", "--variant", "v1")
     assert code == 0
     assert selection(host)["stale"] == []
-    # the Baseline of q09 was recorded under other content of tools/resolve.py
-    path = host.root / ".lanes/baseline/agent/q09.json"
-    data = json.loads(path.read_text())
-    data["surface_hash"] = "recorded-under-older-code"
-    path.write_text(json.dumps(data))
+    # the code behind q09 changes and the Experiment is frozen again on top of it
+    host.write("tools/resolve.py", "def resolve(): return 'changed'\n")
+    host.commit("change the tool")
+    code, _ = host.rl("freeze", "exp")
+    assert code == 0
     code, out = host.rl("select", "exp", "--variant", "v1")
     assert code == 0
-    assert selection(host)["stale"] == ["q09"]
-    assert "rerun these first: q09" in out
+    # q07 and q09 both ran the changed tool; q01 touched only the unchanged history prompt
+    assert selection(host)["stale"] == ["q07", "q09"]
+    assert "rerun these first: q07, q09" in out
 
 
 def test_working_tree_edits_do_not_make_a_baseline_stale(host):

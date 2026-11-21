@@ -53,8 +53,9 @@ def _fmt(value) -> str:
 
 
 def out_of_scope(work: Work, commit: str, scope: list[str]) -> list[str]:
-    changed = set(git(work.root, "diff", "--name-only", commit).split())
-    changed |= set(git(work.root, "ls-files", "--others", "--exclude-standard").split())
+    changed = set(git(work.root, "diff", "--name-only", "--no-renames", "-z", commit).split("\0"))
+    changed |= set(git(work.root, "ls-files", "--others", "--exclude-standard", "-z").split("\0"))
+    changed.discard("")
     own = f".lanes/work/{work.slug}/"
     return sorted(p for p in changed
                   if not p.startswith(own) and not p.startswith(".lanes/baseline/") and not in_scope(p, scope))

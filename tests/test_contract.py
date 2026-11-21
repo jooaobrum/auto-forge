@@ -48,6 +48,8 @@ def test_violation_counts_on_sqlite():
     assert run_sql(sql, [])["orders.rowCount"] == 1
     fifty = [(i, "open", fresh) for i in range(50)]
     assert run_sql(sql, fifty)["orders.rowCount"] == 0
+    for n, expected in ((1, 0), (100, 0), (101, 1)):
+        assert run_sql(sql, [(i, "open", fresh) for i in range(n)])["orders.rowCount"] == expected, n
     assert run_sql(sql, [(1, "open", ts(25))])["orders.freshness"] == 1
     assert run_sql(sql, [(1, "open", ts(23))])["orders.freshness"] == 0
 
@@ -94,6 +96,9 @@ def test_golden_rows_compile_to_cases():
     result = run_sql(sql, [(1, "open", ts(1))])
     assert result["orders.golden.1"] == 0
     assert result["orders.golden.2"] == 1
+    sql, _ = compile_contract(ORDERS, "sqlite", [{"order_id": "1", "status": "007"}])
+    assert run_sql(sql, [(1, "007", ts(1))])["orders.golden.1"] == 0
+    assert run_sql(sql, [(1, "7", ts(1))])["orders.golden.1"] == 1
 
 
 def test_spark_dialect_quotes_with_backticks():
