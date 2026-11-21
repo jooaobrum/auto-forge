@@ -6,7 +6,7 @@ Plan: `.specs/features/v2-agent-spec-skills/plan.md`
 
 ## Intent
 
-30 checks in 7 slices · 9 one-way doors · 0 open
+31 checks in 7 slices · 9 one-way doors · 0 open
 
 ## Checks
 
@@ -32,11 +32,14 @@ Proof: `uv run pytest tests/test_spec.py::test_spec_metrics_override_lab`
 **C6** - With no `**Variants**:`, k or guardrail values: 3 variants, k 3/1/1, `input_tokens` +15% and `latency_ms` +20% when those metrics are listed, and no guardrail for a metric that is not (AC 6)
 Proof: `uv run pytest tests/test_spec.py::test_defaults`
 
-**C7** - `freeze` exits `2` naming the missing `**Approved**:` line, the missing Cases, or a Target Metric absent from the merged metrics (AC 7)
+**C7** - `freeze` exits `2` naming the missing `**Approved**:` line, the missing Cases, a Target case absent from the Cases table, or a Target Metric absent from the merged metrics (AC 7)
 Proof: `uv run pytest tests/test_spec.py::test_freeze_refuses_incomplete_spec`
 
 **C8** - A Cases table with only `Case`, `Question`, `Rubric` is accepted; with `Cite` the cited recall is graded from the run's `cited` ids; an empty `Cite` cell is not graded (AC 8)
 Proof: `uv run pytest tests/test_spec.py::test_cases_columns_adapt`
+Proof: `uv run pytest tests/test_spec.py::test_read_column_and_failure_mode_targets`
+Proof: `uv run pytest tests/test_spec.py::test_route_column_is_graded_when_present`
+Proof: `uv run pytest tests/test_spec.py::test_only_the_first_table_of_a_section_is_read`
 
 **C9** - A spec with neither `## Cases` nor `**Dataset**:` exits `2`; with only `**Dataset**:` it freezes (AC 9)
 Proof: `uv run pytest tests/test_spec.py::test_cases_or_dataset`
@@ -69,6 +72,7 @@ Proof: `uv run pytest tests/test_gate.py::test_edit_scope`
 
 **C18** - `deliver --decision adopt` raises the streak of each passing capability Case, resets a failing one, and lists in `delivery.md` the Cases whose streak reached 3 (AC 13)
 Proof: `uv run pytest tests/test_deliver.py::test_graduation_streak`
+Proof: `uv run pytest tests/test_deliver.py::test_regression_cases_do_not_count_toward_graduation`
 
 **C19** - `deliver` exits `2` with no gate, after a failed gate unless the Decision is `reject`, and for research with no Decision; `promote` writes `.specs/features/<slug>-build/spec.md` with lane `build` (AC 13)
 Proof: `uv run pytest tests/test_deliver.py::test_deliver_rules_and_promote`
@@ -114,6 +118,9 @@ Proof: `uv run pytest tests/test_packaging.py::test_plugin_manifests_and_marketp
 
 **C30** - `route.py` freezes only an approved spec, judges JUnit (a failure named, skipped tests not counted, none run fails) and delivers only after a passing gate, with the goal, gate and commits (door 9)
 Proof: `uv run pytest tests/test_router.py::test_route_freeze_junit_deliver`
+
+**C31** - Each spec template, filled exactly as shown with only the approval written, freezes (agent, model) or compiles (pipeline) (AC 8)
+Proof: `uv run pytest tests/test_templates.py::test_templates_freeze_and_compile_as_shown`
 
 ## Coverage
 

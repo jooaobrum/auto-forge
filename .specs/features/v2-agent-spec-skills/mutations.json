@@ -1,0 +1,23 @@
+[
+  {
+    "file": "skills/agent-spec-experiment/scripts/lab.py",
+    "old": "metric.guardrail or base.guardrail",
+    "new": "base.guardrail or metric.guardrail",
+    "proof": "uv run pytest tests/test_spec.py::test_spec_metrics_override_lab",
+    "label": "C5: LAB guardrail cell wins over the spec's"
+  },
+  {
+    "file": "skills/agent-spec-experiment/scripts/experiment.py",
+    "old": "== \"regression\" or ok is None:",
+    "new": "== \"never\" or ok is None:",
+    "proof": "uv run pytest tests/test_deliver.py::test_graduation_streak",
+    "label": "C18: regression Cases count toward the graduation streak"
+  },
+  {
+    "file": "skills/agent-spec-router/scripts/route.py",
+    "old": "    if last[\"exit\"] != 0:\n        raise RouteError(\"the last gate failed: \"",
+    "new": "    if last[\"exit\"] not in (0, 1):\n        raise RouteError(\"the last gate failed: \"",
+    "proof": "uv run pytest tests/test_router.py::test_route_freeze_junit_deliver",
+    "label": "C30: route.py delivers after a failed gate"
+  }
+]

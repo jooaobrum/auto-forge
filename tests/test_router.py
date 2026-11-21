@@ -50,6 +50,8 @@ def test_route_freeze_junit_deliver(host):
         '<testcase classname="e2e" name="later"><skipped/></testcase>'))
     code, out = host.route("junit", "a")
     assert code == 1 and "FAIL e2e.empty: failed" in out and "e2e.later" not in out
+    code, out = host.route("deliver", "a")
+    assert code == 2 and "the last gate failed" in out
     host.write(".specs/features/a/runs/main/e2e.xml", xml.format('<testcase name="x"><skipped/></testcase>'))
     code, out = host.route("junit", "a")
     assert code == 1 and "no test ran" in out

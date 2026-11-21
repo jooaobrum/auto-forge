@@ -1,0 +1,20 @@
+# v2: agent-spec skills verification
+
+**Verdict**: FAIL
+**Mutations**: 3 - probed C5, C18, C30
+**Proofs**: `proofs.md` at 7d4c049 (32 pass, 0 fail; mutations 0 killed, 3 not)
+**Verifier**: independent sub-agent (author != verifier)
+
+## Findings
+
+| Finding | Evidence | Fix | Closed |
+| --- | --- | --- | --- |
+| A LAB guardrail overrides the spec's guardrail and C5 stays green; "cell by cell" is proven only for `Pass at` and `Target` | mutation `metric.guardrail or base.guardrail -> base.guardrail or metric.guardrail` (`lab.py`) not killed by `test_spec_metrics_override_lab`; the LAB fixture has no guardrail cell to lose to | in C5, give the LAB row a guardrail (e.g. `+10%`) and assert a spec `+30%` wins and an empty spec cell keeps `+10%`; same for `Target` | |
+| Regression Cases counting toward graduation is not held by C18's proof | mutation `== "regression" or ok is None -> == "never" or ok is None` (`experiment.py` `update_streaks`) not killed by `test_graduation_streak`; only the uncited `test_regression_cases_do_not_count_toward_graduation` covers it | add a `regression` Case to C18's test and assert it gets no streak, or cite the existing test as a C18 proof | |
+| `route.py deliver` after a failed gate is untested; C30 says "delivers only after a passing gate" | mutation `last["exit"] != 0 -> not in (0, 1)` (`route.py` `deliver`) not killed by `test_route_freeze_junit_deliver`; the test never calls `deliver` while `gate.json` holds exit 1 | after the failing `junit` call, assert `deliver` exits `2` with "the last gate failed" | |
+| The agent and model templates do not freeze when filled as shown: the ` *` required-markers sit inside the copyable block and become values | filling `spec-agent.md` / `spec-model.md` with only the Approved placeholder replaced: `freeze` exits 2 "**Lane**: must be research" (Lane parses as `research *`); Profile parses as `agent *`, model's `**Target cases**: short *` names a Case `short *`; nothing in agent-spec-writer says to drop the stars | move the `*` markers out of the code block (or into `<!-- required -->` comments, which `spec_md` strips), and add a test that freezes each template block after replacing placeholders | |
+| `spec-agent.md`'s example names Target case `q12`, which is not in its Cases table, and `freeze` accepts it | stars removed, the agent template freezes with `target_cases == ["q07", "q12"]` while Cases holds only `q07`; the gate later reports "q12: Target Case has no Baseline" | make the template's Target cases match its rows; have `freeze` exit 2 naming a Target case absent from `## Cases` when a Cases table exists | |
+| C8's proof covers `Cite` only, yet the Coverage table maps `Read`, `Route` and `Failure mode` to C8 | `test_cases_columns_adapt` has no `Read`, `Route` or `Failure mode` column; no test anywhere sends `read` ids; `Route` is only in the uncited `test_route_column_is_graded_when_present`; Failure-mode target selection (`target_cases` with no `**Target cases**:`) is never exercised since `spec_text` always sets it | extend C8 (or add cited proofs) for a `Read` cell graded from `read` ids, an empty `Read`/`Route` cell not graded, and Target Cases picked by the `Failure mode` column | |
+| `spec_md.table` returns every pipe line in the text, not "the first markdown table": a second table in a section becomes rows of the first | own example: a `## Cases` body with a second table `Owner \| Note` yields Cases `Owner`, `---`, `ana` | stop at the first non-table line after the header, and test it | |
+
+Own examples that held: capability 2 of 4 fails and 3 of 4 passes, 1 of 1 passes; regression `Regression` (capitalised) 2 of 3 fails, 3 of 4 fails, 1 of 1 passes; a contract with `Required: Yes`, an accepted value containing a quote (`O'Brien`) and `rowCount between 0 and 0` counts correctly on SQLite; the pipeline template compiles; `Read`/`Route` grading on the template's agent row behaves as AC 8 states.

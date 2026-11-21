@@ -44,7 +44,12 @@ def _cells(line: str) -> list[str]:
 
 def table(text: str) -> list[dict[str, str]]:
     """The first markdown table in `text` as rows keyed by header; cells stripped of backticks."""
-    lines = [ln for ln in strip_comments(text).splitlines() if ln.strip().startswith("|")]
+    lines: list[str] = []
+    for line in strip_comments(text).splitlines():
+        if line.strip().startswith("|"):
+            lines.append(line)
+        elif lines and line.strip():
+            break
     if len(lines) < 2:
         return []
     header = _cells(lines[0])

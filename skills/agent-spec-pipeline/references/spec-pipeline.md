@@ -1,18 +1,18 @@
 # Spec template: pipeline
 
-Copy to `.specs/features/<slug>/spec.md`. Required: the fields marked *, `## Goal`, and either
+Copy to `.specs/features/<slug>/spec.md`. Required: the fields marked `<!-- required -->`, `## Goal`, and either
 `## Data contract` or an ODCS file in `contracts/`.
 
 ```markdown
 # <title>
 
-**Profile**: pipeline *
-**Lane**: build *
-**Approved**: <the user writes this> *
+**Profile**: pipeline <!-- required -->
+**Lane**: build <!-- required -->
+**Approved**: <the user writes this> <!-- required -->
 
 ## Goal
 
-<what readers of the output get when this ships> *
+<what readers of the output get when this ships> <!-- required -->
 
 ## Input fixture
 

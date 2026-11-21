@@ -36,6 +36,11 @@ def freeze(work: Work) -> dict:
         missing.append("**Lane**: must be research for an Experiment")
     if not spec.cases and not spec.dataset:
         missing.append("no Cases: add a ## Cases table or a **Dataset**: line")
+    unknown = [case for case in spec.target_cases if spec.cases and case not in spec.cases]
+    if unknown:
+        missing.append(f"Target cases not in the Cases table: {', '.join(unknown)}")
+    if spec.lane == "research" and not target_cases(spec):
+        missing.append("no Target cases: list them in **Target cases**: or by Failure mode in the Cases table")
     target = spec.target_metric
     if target is None:
         missing.append("no Target Metric: give one metric a Target delta in ## Metrics (here or in .specs/LAB.md)")

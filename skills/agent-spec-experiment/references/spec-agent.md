@@ -1,16 +1,16 @@
 # Spec template: agent behavior
 
-Copy to `.specs/features/<slug>/spec.md`. Required: the fields marked *, `## Goal`, and `## Cases` (or a
+Copy to `.specs/features/<slug>/spec.md`. Required: the fields marked `<!-- required -->`, `## Goal`, and `## Cases` (or a
 `**Dataset**:` line). Everything else only when this Experiment needs it; `.specs/LAB.md` supplies the rest.
 
 ```markdown
 # <title>
 
-**Profile**: agent *
-**Lane**: research *
-**Approved**: <the user writes this> *
-**Failure mode**: <one recurring way the agent gets Cases wrong> *
-**Target cases**: q07, q12            <!-- or mark them by Failure mode in the Cases table -->
+**Profile**: agent <!-- required -->
+**Lane**: research <!-- required -->
+**Approved**: <the user writes this> <!-- required -->
+**Failure mode**: <one recurring way the agent gets Cases wrong> <!-- required -->
+**Target cases**: q07                  <!-- or leave out and mark them by Failure mode in the Cases table -->
 **Dataset**: <where the Cases live when not in the table below, e.g. an MLflow eval dataset>
 **Budget**: 1500000                   <!-- input tokens; default from LAB.md -->
 **Variants**: 3
@@ -18,7 +18,7 @@ Copy to `.specs/features/<slug>/spec.md`. Required: the fields marked *, `## Goa
 
 ## Goal
 
-<what is different for a user when this ships> *
+<what is different for a user when this ships> <!-- required -->
 
 ## Diagnosis
 

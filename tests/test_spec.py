@@ -1,3 +1,4 @@
+import json
 from fractions import Fraction
 
 from conftest import experiment, frozen, run, spec_text
@@ -22,6 +23,12 @@ def test_spec_metrics_override_lab(host):
     spec = load(host, metrics="| Metric | Pass at | Guardrail | Target |\n| --- | --- | --- | --- |\n"
                               "| cited_recall | | | +0.2 |")
     assert spec.metrics["cited_recall"].pass_at == "0.8"  # an empty spec cell keeps the LAB value
+    host.write(".specs/LAB.md", (host.root / ".specs/LAB.md").read_text().replace(
+        "| input_tokens | | | |", "| input_tokens | | +10% | |"))
+    assert load(host).guardrails()["input_tokens"] == Fraction(10)  # the LAB guardrail cell
+    spec = load(host, metrics="| Metric | Pass at | Guardrail | Target |\n| --- | --- | --- | --- |\n"
+                              "| cited_recall | | | +0.2 |\n| input_tokens | | +40% | |")
+    assert spec.guardrails()["input_tokens"] == Fraction(40)  # the spec's guardrail cell wins
 
 
 def test_defaults(host):
@@ -51,9 +58,17 @@ def test_freeze_refuses_incomplete_spec(host):
     code, out = host.exp("freeze", "exp")
     assert code == 2
     assert "no Target Metric" in out
+    host.spec("exp", targets="q01, q12")
+    code, out = host.exp("freeze", "exp")
+    assert code == 2 and "Target cases not in the Cases table: q12" in out
     host.spec("exp")
     code, out = host.exp("freeze", "exp")
     assert code == 0, out
+
+
+def test_only_the_first_table_of_a_section_is_read():
+    text = "| Case | Question |\n| --- | --- |\n| q01 | a |\n\nOwners:\n\n| Owner |\n| --- |\n| ana |"
+    assert experiment.spec_md.table(text) == [{"Case": "q01", "Question": "a"}]
 
 
 def test_cases_columns_adapt(host):
@@ -79,6 +94,30 @@ def test_cases_columns_adapt(host):
     host.commit()
     code, out = host.exp("freeze", "other")
     assert code == 0, out
+
+
+def test_read_column_and_failure_mode_targets(host):
+    cases = ("| Case | Question | Rubric | Read | Failure mode |\n| --- | --- | --- | --- | --- |\n"
+             "| q01 | Why? | cause | WO-1, WO-2 | reads history, does not cite it |\n"
+             "| q07 | History? | events | | |")
+    host.spec("exp", text=spec_text(cases=cases).replace("**Target cases**: q01\n", ""))
+    base = [run("q01", n, recall=0.5, read=["WO-1"]) for n in (1, 2, 3)] + [run("q07", touched=["skill:history"])]
+    host.write(".specs/features/exp/base.json", json.dumps({"runs": base}))
+    host.commit("spec")
+    assert host.exp("freeze", "exp")[0] == 0
+    host.exp("baseline", "exp", "--from", ".specs/features/exp/base.json")
+    host.exp("select", "exp", "--variant", "v1")
+    selection = json.loads((host.root / ".specs/features/exp/selection.json").read_text())
+    assert selection["cases"]["q01"]["tier"] == "target"  # chosen by its Failure mode cell
+    host.runs("exp", "v1", "q01", [run("q01", n, read=["WO-1"]) for n in (1, 2, 3)])
+    host.runs("exp", "v1", "q07", [run("q07")])
+    host.exp("gate", "exp", "--variant", "v1")
+    results = (host.root / ".specs/features/exp/results.md").read_text()
+    assert "| q01 | target, capability | fail | fail |" in results  # read 1 of 2 ids
+    host.runs("exp", "v1", "q01", [run("q01", n, read=["WO-1", "WO-2"]) for n in (1, 2, 3)])
+    code, out = host.exp("gate", "exp", "--variant", "v1")
+    assert code == 0, out
+    assert "| q01 | target, capability | fail | pass |" in (host.root / ".specs/features/exp/results.md").read_text()
 
 
 def test_route_column_is_graded_when_present(host):

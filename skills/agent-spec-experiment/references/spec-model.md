@@ -1,21 +1,21 @@
 # Spec template: model
 
 Copy to `.specs/features/<slug>/spec.md`. A Case is a slice of the frozen holdout; k is the number of seeds.
-Required: the fields marked *, `## Goal`, `## Cases`, and a Target in `## Metrics`.
+Required: the fields marked `<!-- required -->`, `## Goal`, `## Cases`, and a Target in `## Metrics`.
 
 ```markdown
 # <title>
 
-**Profile**: model *
-**Lane**: research *
-**Approved**: <the user writes this> *
-**Failure mode**: <the slice or behavior that falls short> *
-**Target cases**: short *
+**Profile**: model <!-- required -->
+**Lane**: research <!-- required -->
+**Approved**: <the user writes this> <!-- required -->
+**Failure mode**: <the slice or behavior that falls short> <!-- required -->
+**Target cases**: short <!-- required -->
 **k**: target 3, affected 3, stable 1
 
 ## Goal
 
-<what is different for a user when this ships> *
+<what is different for a user when this ships> <!-- required -->
 
 ## Diagnosis
 
