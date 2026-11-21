@@ -15,16 +15,17 @@ routes each piece of work to the **lane whose proof can close it**:
 | --- | --- | --- |
 | **build** | an end-to-end test that reproduces the user's behavior | app features, code fixes |
 | **build** | a data contract and golden rows on the pipeline's output | data pipelines (Databricks or any SQL engine) |
-| **research** | a per-case comparison against a baseline on a dataset | agent behavior, ML models |
+| **research** | a per-case comparison against a baseline on a dataset | agent behavior, a model's failure modes |
+| **research** | rounds of one change each, verified on out-of-time data | a new ML model |
+| **build** | the production standard and a per-slice promotion over the champion | a verified model to production |
 
 In the research lane nothing hides in an average: every case that passed before and fails now is named, a
 variant that improves recall by spending +100k tokens per turn fails its guardrail, edits outside the agreed
 files fail the gate, and the agent stops and asks you when the token budget runs out.
 
-**Planned, not built yet:** two lanes take a model from a problem to production - `agent-spec-modeling`
-(a locked split, rounds of one change each, verified on out-of-time data) and `agent-spec-mlops` (production
-code, then a per-slice promotion of challenger over champion). See
-[Data science end to end](docs/workflow.md#data-science-end-to-end-planned).
+**Data science end to end:** a confirmed Problem, then `agent-spec-modeling` (a locked split, rounds of one
+change each, verified on out-of-time data) and `agent-spec-mlops` (production code, then a per-slice promotion
+of challenger over champion). See [Data science end to end](docs/workflow.md#data-science-end-to-end).
 
 **New here? Start with [docs/onboarding.md](docs/onboarding.md).** How the workflow runs end to end:
 [docs/workflow.md](docs/workflow.md).
@@ -33,12 +34,14 @@ code, then a per-slice promotion of challenger over champion). See
 
 | Skill | What it does |
 | --- | --- |
-| `agent-spec-router` | the one entry: grills when needed, learns the project once (`.specs/LAB.md`), routes, takes back a `promote` |
+| `agent-spec-router` | the one entry: grills when needed, learns the project once (`.specs/LAB.md`, with the `## Problem` for model work), routes, takes back a `promote` |
 | `agent-spec-grilling` | interviews you until ideas become actionable items |
 | `agent-spec-writer` | drafts a lane's spec from your context |
 | `agent-spec-lean` | build lane for app and code: plan, proof-backed checks, build, independent Verifier |
 | `agent-spec-pipeline` | build lane for data: a data contract in the spec, compiled to SQL, plus golden rows |
 | `agent-spec-experiment` | research lane: baseline, up to 3 variants, a per-case gate, a decision |
+| `agent-spec-modeling` | research lane for a new model: split lock, EDA, baseline, one change per iteration, Verification on OOT |
+| `agent-spec-mlops` | build lane to production: config per environment, tested pipelines, trace, model card, promotion |
 | `data-databricks-sql`, `ml-mlflow-log` | example domain skills your team replaces with its own know-how |
 
 Everything is markdown plus standard-library Python scripts, so it runs wherever an agent has a shell:
@@ -77,8 +80,9 @@ git clone https://github.com/jooaobrum/auto-forge.git && cd auto-forge
 bash examples/run_all.sh
 ```
 
-It needs Python 3.9+, git and pytest (`pip install pytest`, for the app example). It runs one worked example per kind of work - an app, a pipeline, a model and an agent - from `spec.md` to
-`delivery.md` on your laptop. Watch the agent example: its first variant is rejected with
+It needs Python 3.9+, git and pytest (`pip install pytest`, for the app and mlops examples). It runs one worked
+example per kind of work - an app, a pipeline, a model, an agent, a modeling round and a model to production -
+to `delivery.md` on your laptop. Watch the agent example: its first variant is rejected with
 `FAIL q02: regressed` and an input-token guardrail breach, the second is adopted.
 
 ## Develop
@@ -93,4 +97,7 @@ The project builds itself with its own build lane: plans, checks, proofs and ver
 `.specs/features/`, decisions in `.specs/STATE.md`, vocabulary in `GLOSSARY.md`.
 
 `agent-spec-lean` is derived from [tlc-spec-lean](https://github.com/tech-leads-club) by Tech Leads Club
-(CC-BY-4.0).
+(CC-BY-4.0). `agent-spec-modeling` and `agent-spec-mlops` are ported from
+[ds-factory](https://github.com/jooaobrum/ds-factory)'s `exp-hillclimb`, `exp-ideas`, `data-explore`,
+`deploy-industrialize` and `deploy-promote` (jooaobrum); the modeling gates' structure derives from
+tlc-spec-lean, and its loop from [experimenta-ml](https://github.com/jooaobrum/experimenta-ml).

@@ -8,12 +8,16 @@ DESCRIPTION = re.search(r"^description:\s*(.+)$", ROUTER, re.MULTILINE).group(1)
 
 def test_router_routes_by_the_proof():
     assert DESCRIPTION.startswith("Use first")
-    for lane_skill in ("agent-spec-lean", "agent-spec-pipeline", "agent-spec-experiment"):
+    for lane_skill in ("agent-spec-lean", "agent-spec-pipeline", "agent-spec-experiment", "agent-spec-modeling",
+                       "agent-spec-mlops"):
         assert lane_skill in DESCRIPTION
     body = ROUTER.split("## 3. Route by the proof")[1].split("## 4.")[0]
     assert "end-to-end test" in body and "**agent-spec-lean**" in body
     assert "data contract" in body and "**agent-spec-pipeline**" in body
     assert "rate over a dataset" in body and "**agent-spec-experiment**" in body
+    assert "no champion" in body and "**agent-spec-modeling**" in body
+    assert "validate_prod.py" in body and "**agent-spec-mlops**" in body
+    assert "Failure Mode of a model in production" in body
 
 
 def test_router_grills_when_not_actionable():
@@ -25,6 +29,7 @@ def test_router_grills_when_not_actionable():
 def test_router_reroutes_promote():
     body = ROUTER.split("## 4. Take back a promote")[1]
     assert "`promote`" in body and "build lane" in body and "<slug>-build/spec.md" in body
+    assert "<slug>-mlops/spec.md" in body and "**agent-spec-mlops**" in body
 
 
 def test_router_writes_lab_once():

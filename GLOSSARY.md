@@ -127,11 +127,15 @@ _Avoid_: adapter, report, output
 The schema and quality rules a pipeline's output dataset promises its readers, each rule a Case.
 _Avoid_: expectations, schema file, validation
 
-## Data science (planned)
+## Data science
 
 **Problem**:
-The section of LAB.md the router fills before any model work: target, label rule, prediction time, cost of false positives and false negatives, metric.
+The section of LAB.md the router fills before any model work and the user confirms: target, label rule, prediction time, exclusions, cost of false positives and false negatives, metric, and the label rule's SQL check.
 _Avoid_: target doc, discovery
+
+**Data kind**:
+What a modeling round learns from, `tabular` or `image`; the plan declares it next to `**Profile**: model`.
+_Avoid_: profile
 
 **Split lock**:
 The file fixing the train, valid and OOT time windows and their row counts before any EDA or training.
@@ -150,3 +154,11 @@ The model version serving in production under the production alias.
 
 **Challenger**:
 A new model version that takes the Champion's alias only when no slice regresses and the user agrees.
+
+**Promotion**:
+The gate between Challenger and Champion: per slice of the recent period, on paired resamples, no slice regresses and the target gain has a CI above zero; then the user's OK for the alias swap.
+_Avoid_: deploy, release
+
+**HALT**:
+The file `.specs/HALT`: while it exists, every lane script exits 5 before doing anything.
+_Avoid_: kill switch, pause

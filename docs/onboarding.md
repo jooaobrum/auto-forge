@@ -85,6 +85,8 @@ What happens next:
 | "Deduplicate the orders table on Databricks" | build (pipeline) | a data contract (unique `order_id`, ...) and golden rows on a small input |
 | "The agent forgets to cite the work orders it read" | research (agent) | cited recall per question, before and after |
 | "The classifier is bad on short inputs" | research (model) | accuracy per holdout slice, across seeds |
+| "Predict which customers churn next month" | modeling (a new model) | a confirmed Problem, then the metric on out-of-time data against a baseline |
+| "Put the churn model in production" | mlops (build) | the production standard (D1-D10), then no slice regresses against the champion |
 
 You do not choose: the router does, and tells you why.
 
@@ -106,5 +108,6 @@ You do not choose: the router does, and tells you why.
 | "budget spent" | the token budget is used up | say whether to continue and how much |
 | "outside Edit Scope" | the agent changed a file it was not allowed to | ask it to revert, or widen the scope in the spec |
 | "stale or missing Baseline" | the code behind some cases changed since the baseline | the agent reruns those cases first |
+| "HALT .specs/HALT exists" | someone stopped every lane script | delete `.specs/HALT` when the work may go on |
 
 Questions or ideas: open an issue on [github.com/jooaobrum/auto-forge](https://github.com/jooaobrum/auto-forge).

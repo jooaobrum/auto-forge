@@ -1,6 +1,6 @@
 ---
 name: agent-spec-router
-description: Use first for any piece of work - an app feature, a data pipeline, an ML model or an agent change - whether the user brings a spec, a design doc, a problem or only context. Decides whether the work is actionable and which lane proves it, then hands it to agent-spec-lean (app and code), agent-spec-pipeline (data) or agent-spec-experiment (agent or model behavior judged on a dataset). Also use when a delivery ends in "promote".
+description: Use first for any piece of work - an app feature, a data pipeline, an ML model or an agent change - whether the user brings a spec, a design doc, a problem or only context. Decides whether the work is actionable and which lane proves it, then hands it to agent-spec-lean (app and code), agent-spec-pipeline (data), agent-spec-modeling (a new model, or a new round of its backlog), agent-spec-mlops (a verified model to production) or agent-spec-experiment (agent behavior, or a Failure Mode of a model in production, judged on a dataset). Also use when a delivery ends in "promote".
 ---
 
 # Agent Spec Router
@@ -87,14 +87,22 @@ spec, call **agent-spec-writer** to draft one from the lane's template.
 | --- | --- | --- |
 | an end-to-end test reproducing the user's behavior, on app or code | build | **agent-spec-lean** |
 | a data contract and golden rows on the pipeline's output | build | **agent-spec-pipeline** |
-| only a rate over a dataset: agent behavior, model quality | research | **agent-spec-experiment** |
+| only a rate over a dataset: agent behavior, or a Failure Mode of a model in production | research | **agent-spec-experiment** |
+| a Verification on out-of-time data: a model with no champion, or a new round of its backlog | research | **agent-spec-modeling** |
+| the production standard (`validate_prod.py`) and a per-slice promotion: a verified model to production | build | **agent-spec-mlops** |
+
+Model work starts with a confirmed `## Problem` (section 1). A model with no champion yet, or a new round of a
+model's backlog, goes to agent-spec-modeling. A model already in production that gets some slices wrong is a
+Failure Mode judged on holdout slices: agent-spec-experiment.
 
 Write the Profile and the lane into the spec (`**Profile**:`, `**Lane**:`) and hand over.
 
 ## 4. Take back a promote
 
 When an Experiment's delivery says `promote`, its fix belongs in code: read `.specs/features/<slug>-build/spec.md`
-and route it to the build lane. Every hand-off between lanes passes through here.
+and route it to the build lane. When a round's delivery says `promote`, its best experiment goes to production:
+read `.specs/features/<slug>-mlops/spec.md` and hand it to **agent-spec-mlops**. Every hand-off between lanes
+passes through here.
 
 ## Build-lane bookkeeping
 
