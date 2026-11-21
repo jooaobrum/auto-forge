@@ -148,7 +148,7 @@ Proof: `uv run pytest tests/test_router.py::test_route_freeze_junit_deliver`
 
 ## Handoff
 
-- **Settled mid-build:** none
-- **Dispatched:** none
-- **Boundary:** none yet
+- **Settled mid-build:** user: "can we format it to be available by github in case we clone (databricks can only close as entry point) and also available as a vscode agent plugin?" - added door 8, AC 25, C29 (AD-028)
+- **Dispatched:** Verifier at `25b2099`
+- **Boundary:** C1-C30 closed at `25b2099`
 - **Abandoned:** none
