@@ -11,5 +11,8 @@ git config user.email example@example.com
 git config user.name example
 git add -A
 git commit -q -m "initial"
-rl() { "$PY" -m lanes "$@"; }
+SK="$(cd "$HERE/../../skills" && pwd)"
+exp() { "$PY" "$SK/agent-spec-experiment/scripts/experiment.py" "$@"; }
+contract() { "$PY" "$SK/agent-spec-pipeline/scripts/contract.py" "$@"; }
+route() { "$PY" "$SK/agent-spec-router/scripts/route.py" "$@"; }
 expect_fail() { if "$@"; then echo "expected a failing gate"; exit 1; fi; }

@@ -1,22 +1,29 @@
-# lanes
+# agent-spec
 
-A portable harness that takes any piece of work - app, pipeline, model or agent - from offline material to delivery, routing it to the lane whose proof can close it.
+Skills that take any piece of work - app, pipeline, model or agent - from whatever context the user gives to delivery, routing it to the lane whose proof can close it.
 
-## Stages
+## Entry
 
-**Shape**:
-The first stage of every piece of work: offline material and a short grilling turned into a Brief.
-_Avoid_: brainstorm, discovery, refinement
+**Router**:
+The one skill every piece of work enters through; it decides whether the work is actionable and which lane proves it.
+_Avoid_: dispatcher, orchestrator
 
-**Brief**:
-The output of Shape: the goal, the Profile, the lane, and what is ready, needs attention or is not ready.
-_Avoid_: PRD, proposal, ticket
+**Spec**:
+The one document of a piece of work, holding its goal, how it is proven and every setting that differs from LAB.md.
+_Avoid_: brief, config, experiment.json
 
-**Readiness**:
-The state of one item in a Brief: ready, needs attention, or not ready.
+**LAB.md**:
+The project's facts learned once by the agent: how the eval runs, the results glue, metrics, surface, default Edit Scope, domain skills.
+_Avoid_: lanes.json, settings
+
+**Domain skill**:
+A team skill holding know-how a lane needs (how to query the data, platform conventions, logging), loaded at a Load point.
+
+**Load point**:
+One of the three moments a lane loads domain skills: plan, work, verify.
 
 **Delivery**:
-The last stage: the change with its gate evidence and, for an Experiment, its Decision.
+The last record of a piece of work: the goal, the gate evidence and, for an Experiment, its Decision.
 
 ## Lanes
 
@@ -88,6 +95,12 @@ _Avoid_: secondary metric, constraint
 
 **Baseline**:
 The stored per-Case result of the current agent, valid until the code behind that Case changes.
+
+**Capability Case**:
+A Case that passes on a majority of its runs; it graduates after passing three adopted Experiments in a row.
+
+**Regression Case**:
+A Case that must pass every one of its runs.
 
 **Target Cases**:
 The Cases that show the Failure Mode.

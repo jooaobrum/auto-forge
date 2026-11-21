@@ -1,8 +1,6 @@
-## lanes
+## agent-spec
 
-Every piece of work goes shape → goal → plan → approve → work → verify → deliver.
-
-- New work, or material in `.lanes/inbox/<slug>/`: follow `skills/shape/SKILL.md`.
-- A Brief that passes `rl brief <slug>`: follow `skills/lanes/SKILL.md`.
-- Build lane when an end-to-end test reproducing the user's behavior proves it; research lane when only a
-  rate over a dataset does.
+Every piece of work starts with **agent-spec-router** (`skills/agent-spec-router/SKILL.md`): give it a spec, a
+design doc, a problem or just context. It grills when the context is not actionable, writes `.specs/LAB.md`
+the first time, and routes to agent-spec-lean (app, code), agent-spec-pipeline (data) or
+agent-spec-experiment (agent or model behavior on a dataset). The agent runs every script.

@@ -1,0 +1,7 @@
+{
+  "name": "agent-spec",
+  "description": "Spec-driven work for apps, data pipelines, ML models and agents: one router, a build lane proven by end-to-end tests and data contracts, a research lane judged per Case on a dataset.",
+  "version": "0.2.0",
+  "license": "CC-BY-4.0",
+  "keywords": ["spec-driven", "evals", "data-contracts", "experiments", "agents"]
+}

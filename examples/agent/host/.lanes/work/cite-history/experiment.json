@@ -1,2 +1,0 @@
-{"failure_mode": "reads history records but does not cite them", "target_metric": "cited_recall",
- "min_delta": 0.3, "target_cases": ["q01"], "edit_scope": ["prompts/history.md"]}

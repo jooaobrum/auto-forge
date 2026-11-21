@@ -1,14 +1,13 @@
 import os
 import subprocess
 import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from conftest import ROOT
 
 
 def run(script: str) -> subprocess.CompletedProcess:
     env = {**os.environ, "PYTHON": sys.executable}
-    return subprocess.run(["bash", str(ROOT / script)], check=False, capture_output=True, text=True, env=env)
+    return subprocess.run(["bash", str(ROOT / script)], capture_output=True, text=True, env=env, check=False)
 
 
 def test_run_all():
@@ -16,8 +15,11 @@ def test_run_all():
     assert done.returncode == 0, done.stdout + done.stderr
     for profile in ("app", "pipeline", "model", "agent"):
         assert f"=== {profile}" in done.stdout
-    assert done.stdout.count("delivered: .lanes/work/") == 4
-    assert "all profiles delivered" in done.stdout
+    assert done.stdout.count("delivered: .specs/features/") == 4
+    for path in (ROOT / "examples").rglob("*"):
+        assert path.name != "lanes.json", path
+        if path.suffix == ".sh":
+            assert " rl " not in path.read_text() and "-m lanes" not in path.read_text(), path
 
 
 def test_agent_regression_is_named():

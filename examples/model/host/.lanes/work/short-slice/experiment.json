@@ -1,2 +1,0 @@
-{"failure_mode": "short inputs misclassified at the global threshold", "target_metric": "accuracy",
- "min_delta": 0.03, "target_cases": ["short"], "edit_scope": ["model/config.json"]}

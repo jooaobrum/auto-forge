@@ -1,0 +1,11 @@
+{
+  "name": "agent-spec",
+  "owner": {"name": "agent-spec maintainers"},
+  "plugins": [
+    {
+      "name": "agent-spec",
+      "source": "./",
+      "description": "Spec-driven work for apps, data pipelines, ML models and agents, routed by agent-spec-router."
+    }
+  ]
+}
