@@ -17,7 +17,7 @@ Reads .specs/features/<slug>/plan.md. Content rules only:
   P9  the largest valid-to-OOT drop allowed, in (0, 1]
   P10 a backlog of hypotheses H<n>, each with an idea, a why and a source
   A1  with --approved (or once the plan carries one): **Approved**: <date> - user: "<their words>"
-Exit: 0 pass, 1 fail. Standard library only.
+Exit: 0 pass, 1 fail, 5 halted (.specs/HALT exists). Standard library only.
 """
 
 from __future__ import annotations
@@ -179,6 +179,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("slug")
     parser.add_argument("--approved", action="store_true")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     rep, _ = validate(Path(args.root).resolve(), args.slug, approved=True if args.approved else None)
     rep.print()
     return round_md.PASS if rep.ok else round_md.FAIL

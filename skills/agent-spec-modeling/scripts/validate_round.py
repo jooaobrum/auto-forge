@@ -16,7 +16,7 @@ Validates the evidence, not the code: you write the split, training and evaluati
   R9  every feasible iteration reports the required leakage checks
   R10 the status agrees with the checks: a failed check means infeasible
   R11 the code never references the OOT period (src/, notebooks/, the round's experiments/, --code)
-Exit: 0 pass, 1 fail. Standard library only.
+Exit: 0 pass, 1 fail, 5 halted (.specs/HALT exists). Standard library only.
 """
 
 from __future__ import annotations
@@ -31,6 +31,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import round_md
+import spec_md
 import validate_plan
 
 REPORT_SECTIONS = ["Ledger", "What worked", "What did not", "Error patterns", "Domain findings", "Next round"]
@@ -173,6 +174,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--code", nargs="*", default=[], help="more code paths to scan for OOT references")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     rep, _ = validate(Path(args.root).resolve(), args.slug, offline=args.offline, code_paths=tuple(args.code))
     rep.print()
     return round_md.PASS if rep.ok else round_md.FAIL

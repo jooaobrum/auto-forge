@@ -12,7 +12,7 @@ Reads .specs/features/<slug>/verification.md, written by the Verifier:
   V6  every finding closed by a commit
   V7  the verdict is PASS
 Writes gate.json and results.md next to it, for deliver.py.
-Exit: 0 pass, 1 fail. Standard library only.
+Exit: 0 pass, 1 fail, 5 halted (.specs/HALT exists). Standard library only.
 """
 
 from __future__ import annotations
@@ -134,6 +134,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("slug")
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     rep, summary = validate(root, args.slug, offline=args.offline)
     write_gate(root, args.slug, rep, summary, args.offline)

@@ -7,7 +7,7 @@ description: Research lane for agent or model behavior that only a rate over a d
 
 One Experiment, one Failure Mode, one spec at `.specs/features/<slug>/spec.md`. You run every script:
 `python3 <skill-dir>/scripts/experiment.py [--root <repo>] <command> <slug>`. Exit codes: `0` ok, `1` gate
-fail, `2` invalid input, `3` variant cap, `4` budget spent.
+fail, `2` invalid input, `3` variant cap, `4` budget spent, `5` halted (`.specs/HALT` exists).
 
 ## Load points
 

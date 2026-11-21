@@ -49,6 +49,8 @@ import subprocess
 import sys
 import time
 
+import lean_config
+
 JOURNAL = "agent-spec-lean-mutation-journal.json"
 RUNNING = []
 
@@ -173,6 +175,10 @@ def main(argv=None):
 
     try:
         root = os.path.realpath(args.root or git(".", "rev-parse", "--show-toplevel").strip())
+        halt = lean_config.halted(root)
+        if halt:
+            print(halt)
+            return lean_config.HALT_EXIT
         restored = recover(root)
     except SystemExit as e:
         print(e, file=sys.stderr)

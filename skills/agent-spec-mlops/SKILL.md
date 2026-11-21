@@ -1,14 +1,15 @@
 ---
 name: agent-spec-mlops
-description: Build lane that takes a verified modeling round to production code - one config per environment, pipelines with a main() and tested logic, organized MLflow, declared monitoring, a trace and a model card - proven by validate_prod.py (D1-D10). Use when agent-spec-router hands over a `<slug>-mlops` spec from a promoted round, or the user asks to industrialize a model, write its train and score pipelines, or produce its model card.
+description: Build lane that takes a verified modeling round to production code - one config per environment, pipelines with a main() and tested logic, organized MLflow, declared monitoring, a trace and a model card - proven by validate_prod.py (D1-D10), then promotes the challenger over the champion slice by slice. Use when agent-spec-router hands over a `<slug>-mlops` spec from a promoted round, or the user asks to industrialize a model, write its pipelines, produce its model card, or promote, swap or roll back a champion.
 ---
 
 # Agent Spec MLOps
 
 The notebook becomes production code. You implement; the standard is in
 [references/standard.md](references/standard.md); `validate_prod.py` checks it was followed and that production
-reproduces the experiment. Every script is standard-library Python in `<skill-dir>/scripts/`. Exit codes: `0`
-pass, `1` fail, `2` invalid input.
+reproduces the experiment; `promote.py` decides whether the challenger may take the champion's place. Every
+script is standard-library Python in `<skill-dir>/scripts/`. Exit codes: `0` pass, `1` fail, `2` invalid input,
+`5` halted (`.specs/HALT` exists: stop and ask the user).
 
 ## Load points
 
@@ -49,5 +50,13 @@ piece of work; a `WARN [D5] skipped` says the platform rules did not apply.
 
 `route.py deliver <slug>` (agent-spec-router) once the gate passed, and report `delivery.md`. `git push`, a
 deploy and any alias change in `qa` or `prod` need the user's explicit OK.
+
+## 5. Promote
+
+[references/promote.md](references/promote.md): add `## Promotion` to the spec (champion, challenger, metric,
+slices), backtest both versions on the recent period into `runs/champion/` and `runs/challenger/`, then
+`promote.py gate <slug>`. No slice may regress and the target gain needs a CI above zero. Show `promotion.md`;
+on the user's OK, `promote.py approve <slug> --user "<their words>"`, then move the alias. Rollback is the
+previous version in `.specs/prod/promotions.md`.
 
 Ported from ds-factory's `deploy-industrialize` and `deploy-promote` (jooaobrum).

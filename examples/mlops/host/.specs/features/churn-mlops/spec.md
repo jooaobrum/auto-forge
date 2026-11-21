@@ -13,4 +13,19 @@ valid metric.
 
 ## Proof
 
-`validate_prod.py churn-mlops` (D1-D10).
+`validate_prod.py churn-mlops` (D1-D10), then `promote.py gate churn-mlops`.
+
+## Promotion
+
+**Champion**: version 1
+**Challenger**: version 2
+**Period**: 2026-10-01..2026-10-31
+**Metric**: accuracy
+**Min gain**: 0.05
+**Tolerance**: 0
+
+| Slice | Description | Target |
+| --- | --- | --- |
+| all | every account scored in October | yes |
+| new | tenure under 6 months | |
+| long | tenure of 6 months or more | |

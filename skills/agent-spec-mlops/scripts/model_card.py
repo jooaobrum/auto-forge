@@ -3,7 +3,7 @@
 Usage: python3 <skill-dir>/scripts/model_card.py [--root <repo>]
 
 Fills Model, Traceability, Data, Metrics and Monitoring; keeps the Intended use and Limitations already written
-(they need a person). Run it again after every retrain. Exit: 0 ok, 2 invalid input. Standard library only.
+(they need a person). Run it again after every retrain. Exit: 0 ok, 2 invalid input, 5 halted. Standard library only.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import spec_md
 import yaml_lite
 
 KEEP = {
@@ -80,6 +81,10 @@ def main(argv: list[str] | None = None) -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", default=".")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     try:
         print(f"wrote {build(root).relative_to(root)}")

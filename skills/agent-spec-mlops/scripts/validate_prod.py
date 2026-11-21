@@ -19,7 +19,7 @@ are read from .specs/features/<slug>/runs/main/*.xml, and gate.json and results.
   D10 MLflow standard: registry (databricks-uc on Databricks), required tags, model named under the
       environment's catalog.schema, an integer version, a commit sha
 Without `platform: databricks` in the config, D5 is skipped with a warning and D10 accepts any registry.
-Exit: 0 pass, 1 fail. Standard library only (PyYAML used when installed).
+Exit: 0 pass, 1 fail, 5 halted (.specs/HALT exists). Standard library only (PyYAML used when installed).
 """
 
 from __future__ import annotations
@@ -34,6 +34,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+import spec_md
 import yaml_lite
 
 ENVS = ("dev", "qa", "prod")
@@ -309,6 +310,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("slug")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     rep = validate(root, args.slug)
     write_gate(root, args.slug, rep)

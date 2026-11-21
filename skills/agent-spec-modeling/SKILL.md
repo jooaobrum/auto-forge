@@ -8,7 +8,8 @@ description: Research lane that takes a model from a confirmed Problem to a veri
 One **Round**, one folder: `.specs/features/<slug>/`. You write the split, the features, the training and the
 evaluation however the problem needs; the references give patterns that work; the gates check the pattern was
 followed. Every script is standard-library Python in `<skill-dir>/scripts/`, takes `[--root <repo>] <slug>`, and
-names the rule it fails (`FAIL [R6] ...`). Exit codes: `0` pass, `1` fail, `2` invalid input.
+names the rule it fails (`FAIL [R6] ...`). Exit codes: `0` pass, `1` fail, `2` invalid input,
+`5` halted (`.specs/HALT` exists: stop and ask the user).
 
 ```
 ## Problem (router, confirmed) -> split lock -> EDA on train -> backlog -> plan approved

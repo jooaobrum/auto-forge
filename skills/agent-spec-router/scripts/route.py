@@ -5,7 +5,7 @@ Usage: python3 route.py [--root <repo>] problem             # .specs/LAB.md ## P
        python3 route.py [--root <repo>] junit <slug>      # judges runs/main/*.xml
        python3 route.py [--root <repo>] deliver <slug>    # needs a passing gate.json (junit or contract.py)
 Research work is frozen, gated and delivered by agent-spec-experiment's experiment.py.
-Exit: 0 ok, 1 gate fail, 2 invalid input.
+Exit: 0 ok, 1 gate fail, 2 invalid input, 5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
@@ -157,6 +157,10 @@ def main(argv: list[str] | None = None) -> int:
     for name in ("freeze", "junit", "deliver"):
         sub.add_parser(name).add_argument("slug")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     try:
         if args.command == "problem":

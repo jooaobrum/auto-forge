@@ -4,7 +4,7 @@ Usage: python3 <skill-dir>/scripts/deliver.py [--root <repo>] <slug> --decision 
 
 Needs the gate.json validate_verification.py wrote; promote needs it passing. Writes delivery.md; promote also
 writes .specs/features/<slug>-mlops/spec.md for agent-spec-router to hand to agent-spec-mlops.
-Exit: 0 ok, 2 invalid input.
+Exit: 0 ok, 2 invalid input, 5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import round_md
+import spec_md
 
 DECISIONS = ("promote", "reject")
 
@@ -75,6 +76,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("slug")
     parser.add_argument("--decision", choices=DECISIONS, required=True)
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     try:
         print(f"delivered: {deliver(root, args.slug, args.decision).relative_to(root)}")

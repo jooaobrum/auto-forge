@@ -42,3 +42,4 @@ def test_mlops_gate_names_what_production_lacks():
     assert done.returncode == 0, done.stdout + done.stderr
     assert "FAIL [D7] .specs/prod/trace.json not found" in done.stdout
     assert "validate_prod churn-mlops: pass" in done.stdout
+    assert "promotion churn-mlops: pass" in done.stdout and "move the champion alias to version 2" in done.stdout

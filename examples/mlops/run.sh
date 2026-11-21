@@ -10,3 +10,6 @@ mlops model_card
 mlops validate_prod churn-mlops
 git add -A && git commit -qm "feat(churn): train in dev, with its trace and model card"
 route deliver churn-mlops
+PYTHONPATH=src "$PY" backtest.py $W/runs
+mlops promote gate churn-mlops
+mlops promote approve churn-mlops --user "ok, make version 2 the champion"

@@ -10,6 +10,7 @@ copies of the same rule drift until one gate demands what the other does not.
 Every function takes lines already stripped of fenced blocks.
 """
 
+import os
 import re
 
 MAX_MUTATIONS = 5
@@ -87,3 +88,17 @@ def plan_owes_pictures(plan_lines, checks_lines=()):
 def plan_marks_binding(plan_lines):
     """True when plan.md's `## Sources` marks a source binding (the binding-source comparison runs)."""
     return any(BINDING_RE.search(s) and not NOT_BINDING_RE.search(s) for s in _section(plan_lines, "Sources"))
+
+
+HALT_EXIT = 5
+
+
+def halted(root):
+    """The message when `<root>/.specs/HALT` exists: every gate stops before doing anything; "" otherwise."""
+    path = os.path.join(root, ".specs", "HALT")
+    if not os.path.exists(path):
+        return ""
+    with open(path, encoding="utf-8", errors="replace") as handle:
+        reason = next((line.strip() for line in handle if line.strip()), "")
+    return ("HALT .specs/HALT exists" + (" (%s)" % reason if reason else "")
+            + " - nothing ran; remove the file to resume")

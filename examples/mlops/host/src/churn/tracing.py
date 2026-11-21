@@ -21,7 +21,7 @@ def lock_hash(path: str = "uv.lock") -> str:
 
 def build(cfg: dict, round_slug: str, experiment: dict, valid: float, versions: dict, run_id: str) -> dict:
     return {
-        "model": {"name": f"{cfg['target']}.{cfg['model']['name']}", "version": 1, "alias": "challenger"},
+        "model": {"name": f"{cfg['target']}.{cfg['model']['name']}", "version": 2, "alias": "challenger"},
         "git_commit": commit(),
         "config_env": cfg["env"],
         "data": [{"table": table, "version": version} for table, version in versions.items()],

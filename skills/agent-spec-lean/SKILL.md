@@ -139,7 +139,8 @@ Decisions and lessons: [memory.md](references/memory.md).
 
 Resolve `<skill-dir>` as the directory containing this `SKILL.md` and run
 `python3 <skill-dir>/scripts/<name>.py`. Pass `--root` when cwd is not the project root. A non-zero
-exit means stop and fix. Run a script rather than read it: its messages say what to change.
+exit means stop and fix. Run a script rather than read it: its messages say what to change. Exit `5` means
+`.specs/HALT` exists: nothing ran; stop and ask the user.
 
 | When | Command |
 | --- | --- |

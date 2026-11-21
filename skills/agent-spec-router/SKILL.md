@@ -101,3 +101,8 @@ and route it to the build lane. Every hand-off between lanes passes through here
 For build work, run `python3 <skill-dir>/scripts/route.py freeze <slug>` once the spec has its
 `**Approved**:` line. For an app, judge the e2e JUnit with `route.py junit <slug>` (results in
 `runs/main/*.xml`). Close with `route.py deliver <slug>` once a gate passed and report `delivery.md`.
+
+## Halt
+
+When `.specs/HALT` exists, every lane script exits `5` before doing anything, and prints the file's first line.
+Stop, tell the user what it says, and wait: only they remove it.

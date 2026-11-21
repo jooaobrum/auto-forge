@@ -27,6 +27,8 @@ import re
 import subprocess
 import sys
 
+import lean_config
+
 import runners
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -135,6 +137,10 @@ def main(argv=None):
     ap.add_argument("--root", default=".")
     ap.add_argument("--mutations")
     a = ap.parse_args(argv)
+    halt = lean_config.halted(a.root)
+    if halt:
+        print(halt)
+        return lean_config.HALT_EXIT
     root = os.path.abspath(a.root)
     fdir = os.path.join(root, ".specs", "features", a.feature)
     checks_path = os.path.join(fdir, "checks.md")

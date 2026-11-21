@@ -58,6 +58,8 @@ import os
 import re
 import sys
 
+import lean_config
+
 from lean_config import MAX_MUTATIONS, plan_approved, plan_marks_binding, read_mutations
 
 REQUIRED_SECTIONS = ["Checks", "Coverage", "Swept"]
@@ -440,6 +442,10 @@ def main(argv=None):
     p.add_argument("--root", default=".")
     p.add_argument("--strict", action="store_true")
     args = p.parse_args(argv)
+    halt = lean_config.halted(args.root)
+    if halt:
+        print(halt)
+        return lean_config.HALT_EXIT
 
     path = resolve_checks(args.target, args.root)
     if not path:

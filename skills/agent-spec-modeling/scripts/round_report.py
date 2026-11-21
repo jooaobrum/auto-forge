@@ -5,6 +5,7 @@ Usage: python3 <skill-dir>/scripts/round_report.py [--root <repo>] <slug>
 Writes the `## Climb` summary and the `## Ledger` table from the ledger; on an existing report it replaces only
 those two sections, so the prose you wrote stays. The other sections are yours: What worked, What did not,
 Error patterns, Domain findings, Next round.
+Exit: 0 ok, 2 invalid input, 5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import round_md
+import spec_md
 
 PROSE = {
     "What worked": "<the kept changes and the likely mechanism of each>",
@@ -78,6 +80,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("slug")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     if not (round_md.round_dir(root, args.slug) / "ledger.json").exists():
         print(f"ERROR .specs/features/{args.slug}/ledger.json is missing")

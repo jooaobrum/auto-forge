@@ -79,6 +79,8 @@ import os
 import re
 import sys
 
+import lean_config
+
 from lean_config import BINDING_RE, NOT_BINDING_RE, _section, plan_marks_binding
 
 # Each entry is a tuple of acceptable heading names (first is canonical).
@@ -742,6 +744,10 @@ def main(argv=None):
     p.add_argument("--root", default=".")
     p.add_argument("--strict", action="store_true")
     args = p.parse_args(argv)
+    halt = lean_config.halted(args.root)
+    if halt:
+        print(halt)
+        return lean_config.HALT_EXIT
 
     path = resolve_plan(args.target, args.root)
     if not path:
