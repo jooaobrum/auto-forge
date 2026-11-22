@@ -41,7 +41,10 @@ A platform skill (Databricks, MLflow) comes from there; nothing here needs one.
 ## 2. Work: the climb
 
 The loop is in [loop.md](references/loop.md); each iteration leaves the evidence in
-[patterns/iteration.md](references/patterns/iteration.md):
+[patterns/iteration.md](references/patterns/iteration.md). You own the loop and its choices; where subagents
+exist, dispatch each iteration to the **modeling-iteration-runner** agent (`agents/modeling-iteration-runner.md`)
+with the slug and one hypothesis, and read the ledger row it returns. With no subagents, run the
+`run-modeling-iteration` skill in this chat.
 
 1. **The baseline is iteration one**, kept. Every later iteration changes **one thing**, named `H<n>` (from the
    backlog; add a new idea there first) or `EA-it<NN>` (a finding of iteration NN's error analysis).
@@ -63,11 +66,13 @@ Knowledge: [features.md](references/features.md), [models.md](references/models.
 
 ## 3. Verify
 
-A fresh context (a subagent, or a new chat) follows [verify.md](references/verify.md): it judges the ledger's
-best at a clean commit, reads the OOT once, by period, runs both mutations and writes `verification.md`. Then
+Dispatch the **verifier** agent (`agents/verifier.md` of this plugin) with the slug and nothing else: it
+follows [verify.md](references/verify.md), judges the ledger's best at a clean commit, reads the OOT once, by
+period, runs both mutations, writes `verification.md` and returns the verdict and the findings. Then
 `validate_verification.py <slug> [--offline]` (V0-V7) must exit 0; it writes `gate.json` and `results.md`.
-`self-verified` only warns: say so in the delivery. A drop above the plan's Max drop is a finding, not
-something to fix on the OOT.
+You never verify your own round: `self-verified` fails V1. With no subagents, a new chat runs the
+`verify-model` skill and declares `**Fallback**`; the gate warns: say so in the delivery. A drop above the
+plan's Max drop is a finding, not something to fix on the OOT.
 
 ## 4. Deliver
 
