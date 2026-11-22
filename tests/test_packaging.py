@@ -46,6 +46,13 @@ def test_agents_are_shared_by_claude_code_and_copilot():
         assert "agents" not in json.loads(manifest.read_text()), manifest
 
 
+def test_copilot_agent_plugin_has_the_same_agents():
+    # Agent Plugins 1.0 (root plugin.json $schema): Copilot reads agents from com.github.copilot/agents/
+    for name in AGENTS:
+        copy = ROOT / "com.github.copilot" / "agents" / f"{name}.agent.md"
+        assert copy.read_text() == (ROOT / "agents" / f"{name}.md").read_text(), f"{copy} drifted from agents/{name}.md"
+
+
 def test_platforms_without_subagents_get_the_same_body_as_a_skill():
     for agent, skill in AGENTS.items():
         _, agent_body = split_frontmatter(ROOT / "agents" / f"{agent}.md")

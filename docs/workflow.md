@@ -197,7 +197,7 @@ The mlops lane has no Verifier: `validate_prod` is its gate and you review the m
 | Platform | Subagents | How |
 | --- | --- | --- |
 | Claude Code | yes | the plugin's `agents/` folder, loaded by default (`auto-forge:verifier`) |
-| GitHub Copilot (VS Code, CLI, cloud agent) | yes, as custom agents | the same files, frontmatter `name`, `description`, `tools` only; copy them to `.github/agents/` where the plugin does not load them |
+| GitHub Copilot (VS Code, CLI, cloud agent) | yes, as custom agents | the same files, frontmatter `name`, `description`, `tools` only; the plugin ships them in `com.github.copilot/agents/` (Agent Plugins 1.0), a test keeps them identical to `agents/` |
 | Databricks Genie Code | no | the `verify-model` and `run-modeling-iteration` skills: the same text, run in a new chat with `@` |
 
 The fallback on a platform with no subagents is a new chat, declared in the file: a modeling Verifier writes
