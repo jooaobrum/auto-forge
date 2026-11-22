@@ -40,7 +40,7 @@ def work(tmp_path, capsys):
         root = tmp_path
 
         def spec(self, metric="accuracy", min_gain="0.01", tolerance="0", text=None):
-            (folder / "spec.md").write_text(text or SPEC.format(metric=metric, min_gain=min_gain, tolerance=tolerance))
+            (folder / "plan.md").write_text(text or SPEC.format(metric=metric, min_gain=min_gain, tolerance=tolerance))
 
         def prod(self, code=0):
             (folder / "gate.json").write_text(json.dumps({"exit": code, "command": f"validate_prod.py {SLUG}",

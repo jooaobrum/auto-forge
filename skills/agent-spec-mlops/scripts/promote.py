@@ -4,7 +4,7 @@ Usage: python3 promote.py [--root <repo>] gate <slug>
        python3 promote.py [--root <repo>] approve <slug> --user "<their words>"
 
 The experiment lane's gate, applied to a promotion: the Cases are slices of the recent period, the Baseline is
-the champion, the Variant is the challenger. Reads `## Promotion` of .specs/features/<slug>/spec.md and the
+the champion, the Variant is the challenger. Reads `## Promotion` of .specs/features/<slug>/plan.md and the
 Results files in runs/champion/ and runs/challenger/ ({"runs": [{"case": <slice>, "run": <resample>,
 "metrics": {...}}]}, or a CSV with case and run columns). Runs are paired bootstrap resamples: run i of both
 models scores the same rows. The gate fails when a slice regresses (its mean delta is below -Tolerance) or when
@@ -47,12 +47,12 @@ def _number(text: str, default: float) -> float:
 
 
 def settings(root: Path, slug: str) -> dict:
-    path = folder(root, slug) / "spec.md"
+    path = folder(root, slug) / "plan.md"
     if not path.exists():
-        raise PromoteError(f".specs/features/{slug}/spec.md is missing")
+        raise PromoteError(f".specs/features/{slug}/plan.md is missing")
     body = spec_md.section(path.read_text(), "Promotion")
     if not body:
-        raise PromoteError("the spec has no ## Promotion section (references/promote.md)")
+        raise PromoteError("the plan has no ## Promotion section (references/promote.md)")
     lab = root / ".specs" / "LAB.md"
     problem = spec_md.section(lab.read_text(), "Problem") if lab.exists() else ""
     metric = (spec_md.field(body, "Metric") or spec_md.field(problem, "Metric")).lower()

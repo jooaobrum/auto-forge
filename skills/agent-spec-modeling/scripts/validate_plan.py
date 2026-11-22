@@ -16,6 +16,8 @@ Reads .specs/features/<slug>/plan.md. Content rules only:
   P8  an iteration budget
   P9  the largest valid-to-OOT drop allowed, in (0, 1]
   P10 a backlog of hypotheses H<n>, each with an idea, a why and a source
+  P11 ## Out of scope and ## Assumptions are there ("none - <why>" is complete)
+  warn: no ## Sources or ## Shape; a hypothesis with no '- Expect:'
   A1  with --approved (or once the plan carries one): **Approved**: <date> - user: "<their words>"
 Exit: 0 pass, 1 fail, 5 halted (.specs/HALT exists). Standard library only.
 """
@@ -164,6 +166,17 @@ def validate(root: Path, slug: str, approved: bool | None = None) -> tuple[round
             if not hypothesis.get("source"):
                 rep.fail("P10", f"{hypothesis.id}: '- Source:' (eda, domain, lesson L-NNN, error analysis, "
                                 "recipe <name>)")
+
+    for name in ("Out of scope", "Assumptions"):
+        section = doc.section(name)
+        if section is None or (not section.text and not section.items):
+            rep.fail("P11", f"'## {name}' missing or empty - write 'none - <why>' when nothing applies")
+    for name in ("Sources", "Shape"):
+        if doc.section(name) is None:
+            rep.warn("P11", f"no '## {name}' (references/plan.md)")
+    for hypothesis in (backlog.items if backlog else []):
+        if not hypothesis.get("expect"):
+            rep.warn("P10", f"{hypothesis.id}: no '- Expect:' - the movement on the metric this should give")
 
     stated = doc.h("approved")
     wanted = approved or (approved is None and stated and not stated.startswith("<"))

@@ -49,7 +49,7 @@ def run_sql(sql: str, rows: list) -> dict:
 
 
 def compiled(host, golden: str = "") -> str:
-    host.write(".specs/features/p/spec.md", SPEC.format(golden=golden))
+    host.write(".specs/features/p/plan.md", SPEC.format(golden=golden))
     code, out = host.contract("compile", "p", "--dialect", "sqlite")
     assert code == 0, out
     return (host.root / ".specs/features/p/contract.sql").read_text()
@@ -83,7 +83,7 @@ def test_golden_rows(host):
 
 
 def test_odcs_fallback_and_unknown_rule(host, monkeypatch):
-    host.write(".specs/features/p/spec.md", "# Orders\n\n**Profile**: pipeline\n**Lane**: build\n\n## Goal\n\nx\n")
+    host.write(".specs/features/p/plan.md", "# Orders\n\n**Profile**: pipeline\n**Lane**: build\n\n## Goal\n\nx\n")
     host.write("contracts/orders.yaml", "schema:\n  - name: orders\n    properties:\n      - name: order_id\n"
                                         "        required: true\n")
     code, out = host.contract("compile", "p", "--dialect", "sqlite")
@@ -100,7 +100,7 @@ def test_odcs_fallback_and_unknown_rule(host, monkeypatch):
     code, out = host.contract("compile", "p")
     assert code == 2 and "pyyaml is not installed" in out
     monkeypatch.undo()
-    host.write(".specs/features/p/spec.md", SPEC.format(golden="").replace("- freshness loaded_at 24h",
+    host.write(".specs/features/p/plan.md", SPEC.format(golden="").replace("- freshness loaded_at 24h",
                                                                            "- zScoreOutliers loaded_at"))
     (host.root / ".specs/features/p/contract.sql").unlink()
     code, out = host.contract("compile", "p")

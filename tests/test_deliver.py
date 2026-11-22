@@ -77,7 +77,7 @@ def test_deliver_rules_and_promote(host):
     host.exp("gate", "exp", "--variant", "v1")
     code, out = host.exp("deliver", "exp", "--decision", "promote")
     assert code == 0, out
-    text = (host.root / ".specs/features/exp-build/spec.md").read_text()
+    text = (host.root / ".specs/features/exp-build/plan.md").read_text()
     assert "**Lane**: build" in text
     assert "**Failure mode**: reads history, does not cite it" in text
     assert "- q01" in text

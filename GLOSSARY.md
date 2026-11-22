@@ -8,9 +8,12 @@ Skills that take any piece of work - app, pipeline, model or agent - from whatev
 The one skill every piece of work enters through; it decides whether the work is actionable and which lane proves it.
 _Avoid_: dispatcher, orchestrator
 
-**Spec**:
-The one document of a piece of work, holding its goal, how it is proven and every setting that differs from LAB.md.
+**Plan**:
+The one document every piece of work starts with, `.specs/features/<slug>/plan.md`, detailed enough for an agent to work from: what must be true (the problem, the criteria or behavior, how it is proven) and what is being built or tried (the shape it touches, the doors or hypotheses), plus every setting that differs from LAB.md. Build lanes use agent-spec-lean's plan; research lanes its adaptation. The proof-bearing parts (Cases, Metrics, the data contract) are the plan's spec.
 _Avoid_: brief, config, experiment.json
+
+**Plan guide**:
+A lane's `references/plan.md`: how to write that lane's plan, with its template or a worked example.
 
 **LAB.md**:
 The project's facts learned once by the agent: how the eval runs, the results glue, metrics, surface, default Edit Scope, domain skills.

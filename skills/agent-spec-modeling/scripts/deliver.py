@@ -3,7 +3,7 @@
 Usage: python3 <skill-dir>/scripts/deliver.py [--root <repo>] <slug> --decision promote|reject
 
 Needs the gate.json validate_verification.py wrote; promote needs it passing. Writes delivery.md; promote also
-writes .specs/features/<slug>-mlops/spec.md for agent-spec-router to hand to agent-spec-mlops.
+writes .specs/features/<slug>-mlops/plan.md for agent-spec-router to hand to agent-spec-mlops.
 Exit: 0 ok, 2 invalid input, 5 halted (.specs/HALT exists).
 """
 
@@ -44,7 +44,7 @@ def deliver(root: Path, slug: str, decision: str) -> Path:
     lines = [f"# Delivery - {slug}", "", "## Goal", "", question, "", "## Decision", "", decision, ""]
     if decision == "promote":
         lines += [(f"Experiment `{gate.get('experiment')}` goes to production: "
-                   f"`.specs/features/{slug}-mlops/spec.md`, for agent-spec-router."), ""]
+                   f"`.specs/features/{slug}-mlops/plan.md`, for agent-spec-router."), ""]
     for name in ("Climb", "Ledger", "Next round"):
         section = report.section(name)
         if section and section.text:
@@ -58,15 +58,21 @@ def deliver(root: Path, slug: str, decision: str) -> Path:
 
 def _promote(root: Path, slug: str, experiment: str | None, question: str) -> None:
     build = round_md.round_dir(root, f"{slug}-mlops")
-    if (build / "spec.md").exists():
+    if (build / "plan.md").exists():
         return
     build.mkdir(parents=True, exist_ok=True)
     lines = [f"# {slug} - to production", "", "**Profile**: model", "**Lane**: build", f"**Round**: {slug}",
-             f"**Experiment**: {experiment}", "", "## Goal", "",
-             (f"Experiment `{experiment}` of round `{slug}` runs in production to the team's standard and "
-              "reproduces its valid metric."), "", f"The round asked: {question}", "",
-             "## Proof", "", f"`validate_prod.py {slug}-mlops` (D1-D10), then `promote.py gate {slug}-mlops`.", ""]
-    (build / "spec.md").write_text("\n".join(lines), encoding="utf-8")
+             f"**Experiment**: {experiment}", "",
+             "<!-- Seeded by deliver.py --decision promote. agent-spec-writer completes it from",
+             "     agent-spec-mlops/references/plan.md: Shape, Surface, Landing, Criteria, Out of scope, Assumptions. -->",
+             "", "## Problem", "",
+             (f"Experiment `{experiment}` of round `{slug}` passed its Verification but runs only as a notebook: "
+              "nothing scores in production and nothing reproduces its valid metric."), "",
+             f"The round asked: {question}", "",
+             "## Proof", "", f"`validate_prod.py {slug}-mlops` (D1-D10), then `promote.py gate {slug}-mlops`.", "",
+             "## Sources", "",
+             f"- `.specs/features/{slug}/` (plan.md, report.md, verification.md) - binding - the round", ""]
+    (build / "plan.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def main(argv: list[str] | None = None) -> int:

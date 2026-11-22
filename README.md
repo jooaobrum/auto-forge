@@ -3,7 +3,7 @@
 **Spec-driven agent workflows for apps, data pipelines, ML models and agents.**
 
 Bring a spec, a design doc, a meeting transcript or a single sentence. auto-forge turns it into an actionable
-spec, decides what will prove the work is done, lets the agent build or experiment until that proof passes,
+plan, decides what will prove the work is done, lets the agent build or experiment until that proof passes,
 and hands you back a delivery with the evidence. You talk, approve and read; the agent does the rest.
 
 Most coding-agent workflows assume every change can be proven by a unit test. Real work is not like that:
@@ -36,9 +36,9 @@ of challenger over champion). See [Data science end to end](docs/workflow.md#dat
 | --- | --- |
 | `agent-spec-router` | the one entry: grills when needed, learns the project once (`.specs/LAB.md`, with the `## Problem` for model work), routes, takes back a `promote` |
 | `agent-spec-grilling` | interviews you until ideas become actionable items |
-| `agent-spec-writer` | drafts a lane's spec from your context |
+| `agent-spec-writer` | drafts the plan every piece of work starts with, from a PRD, a design doc or context |
 | `agent-spec-lean` | build lane for app and code: plan, proof-backed checks, build, independent Verifier |
-| `agent-spec-pipeline` | build lane for data: a data contract in the spec, compiled to SQL, plus golden rows |
+| `agent-spec-pipeline` | build lane for data: a lean plan carrying a data contract, compiled to SQL, plus golden rows |
 | `agent-spec-experiment` | research lane: baseline, up to 3 variants, a per-case gate, a decision |
 | `agent-spec-modeling` | research lane for a new model: split lock, EDA, baseline, one change per iteration, Verification on OOT |
 | `agent-spec-mlops` | build lane to production: config per environment, tested pipelines, trace, model card, promotion |

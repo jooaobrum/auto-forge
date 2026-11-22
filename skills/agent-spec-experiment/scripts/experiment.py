@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import sys
 from fractions import Fraction
 from pathlib import Path
@@ -30,7 +31,7 @@ def freeze(work: Work) -> dict:
     spec = lab.load_spec(work)
     missing = []
     if not spec.approved:
-        missing.append("no **Approved**: line - the user approves the spec first")
+        missing.append("no **Approved**: line - the user approves the plan first")
     if not spec.profile:
         missing.append("no **Profile**:")
     if spec.lane != "research":
@@ -45,12 +46,37 @@ def freeze(work: Work) -> dict:
     target = spec.target_metric
     if target is None:
         missing.append("no Target Metric: give one metric a Target delta in ## Metrics (here or in .specs/LAB.md)")
+    missing += plan_findings(spec.text)
+    if not spec.edit_scope:
+        missing.append("no Edit Scope: list the paths in ## Edit Scope (here or in .specs/LAB.md)")
     if missing:
         raise LabError("; ".join(missing))
     commit = lab.git(work.root, "rev-parse", "HEAD").strip()
     frozen = {"commit": commit, "profile": spec.profile, "lane": spec.lane}
     work.write_json("frozen.json", frozen)
     return frozen
+
+
+RESEARCH_SECTIONS = ("Problem", "Diagnosis", "Hypotheses")
+ADVISORY_SECTIONS = ("Behavior", "Shape", "Out of scope", "Assumptions", "Sources")
+
+
+def plan_findings(text: str) -> list[str]:
+    """The research half of the plan (references/plan.md): what is wrong, why, and what each variant tries."""
+    out = [f"no ## {name}: references/plan.md says what it holds" for name in RESEARCH_SECTIONS
+           if not spec_md.section(text, name)]
+    hypotheses = spec_md.subsections(spec_md.section(text, "Hypotheses"))
+    if spec_md.section(text, "Hypotheses") and not hypotheses:
+        out.append("## Hypotheses needs at least one '### H1 - <variant>' with '- Idea:' and '- Why:'")
+    for name, block in hypotheses.items():
+        fields = {k.lower(): v for k, v in (re.findall(r"^-\s*([A-Za-z ]+):\s*(.*\S)", block, re.MULTILINE))}
+        if len(fields.get("idea", "")) < 8 or len(fields.get("why", "")) < 8:
+            out.append(f"{name}: '- Idea:' and '- Why:' must both say something concrete")
+    return out
+
+
+def plan_warnings(text: str) -> list[str]:
+    return [f"no ## {name} - references/plan.md" for name in ADVISORY_SECTIONS if not spec_md.section(text, name)]
 
 
 # --- grading --------------------------------------------------------------------------------------------------
@@ -338,12 +364,17 @@ def _promote(work: Work, spec: lab.Spec, frozen: dict) -> None:
     build = Work(work.root, f"{work.slug}-build")
     build.dir.mkdir(parents=True, exist_ok=True)
     cases = target_cases(spec)
+    problem = spec_md.section(spec.text, "Problem") or spec_md.section(spec.text, "Goal")
     lines = [f"# {work.slug} - build", "", f"**Profile**: {frozen['profile']}", "**Lane**: build",
              f"**Failure mode**: {spec.failure_mode or '(not named)'}", "",
-             "## Goal", "", f"Fix in code the Failure Mode Experiment `{work.slug}` showed.", "",
+             "<!-- Seeded by experiment.py deliver --decision promote. agent-spec-writer completes it as a lean plan",
+             "     (agent-spec-lean/references/plan.md): Shape, Surface, Landing, Criteria, Out of scope, Assumptions. -->",
+             "", "## Problem", "", problem, "",
+             f"Experiment `{work.slug}` showed the fix belongs in code: it holds on every run, not on a rate.", "",
              "## Target Cases", "", *[f"- {c}" for c in cases], "",
-             "## Proof", "", f"`experiment.py gate {work.slug} --regression-only`, and the plan's own checks", ""]
-    build.path("spec.md").write_text("\n".join(lines))
+             "## Proof", "", f"`experiment.py gate {work.slug} --regression-only`, and the plan's own checks", "",
+             "## Sources", "", f"- `.specs/features/{work.slug}/plan.md` and `delivery.md` - binding - the Experiment", ""]
+    build.path("plan.md").write_text("\n".join(lines))
 
 
 # --- CLI ------------------------------------------------------------------------------------------------------
@@ -379,6 +410,8 @@ def _run(args) -> int:
     work = Work(root, args.slug)
     if args.command == "freeze":
         frozen = freeze(work)
+        for line in plan_warnings(lab.load_spec(work).text):
+            print(f"WARN {line}")
         print(f"frozen {work.slug} at {frozen['commit'][:12]} ({frozen['profile']})")
         return OK
     if args.command == "baseline":

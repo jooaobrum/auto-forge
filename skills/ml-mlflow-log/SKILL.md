@@ -9,7 +9,7 @@ An example of a team's tracking skill. Load points: **work** (log every run), **
 Results files).
 
 - **Log.** One MLflow run per Case and repeat, tagged `experiment_slug`, `variant`, `case`, `seed`. Log the
-  metrics the spec's `## Metrics` names, with the same keys.
+  metrics the plan's `## Metrics` names, with the same keys.
 - **Traces.** Agent runs go through `mlflow.langchain.autolog()`; each trace carries the turn's spans. The
   records a turn **read** are the ids in the outputs of retrieval tool spans; the records it **cited** are
   the ids in the final answer.

@@ -123,12 +123,12 @@ def test_edit_scope(host):
     sh(host.root, "git", "mv", "tools/resolve.py", "prompts/resolve.py")
     host.commit("move a tool into scope")
     host.write("notes/new file.md", "untracked, outside\n")
-    host.write(".specs/features/other/spec.md", "another piece of work\n")
+    host.write(".specs/features/other/plan.md", "another piece of work\n")
     code, out = host.exp("gate", "exp", "--variant", "v1")
     assert code == 1
     assert "FAIL outside Edit Scope: tools/resolve.py" in out
     assert "FAIL outside Edit Scope: notes/new file.md" in out
-    assert "FAIL outside Edit Scope: .specs/features/other/spec.md" in out
+    assert "FAIL outside Edit Scope: .specs/features/other/plan.md" in out
     assert "prompts/my notes.md" not in out and "prompts/history.md" not in out
 
 

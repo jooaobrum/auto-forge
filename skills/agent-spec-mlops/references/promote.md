@@ -8,7 +8,7 @@ and the target gain needs a CI above zero.
 
 1. `validate_prod.py <slug>` passes on the commit that ships; `promote.py` refuses to run otherwise.
 2. `.specs/prod/trace.json` names the version that ships and the verified round it came from.
-3. Add `## Promotion` to the spec:
+3. Add `## Promotion` to the plan:
 
 ```markdown
 ## Promotion

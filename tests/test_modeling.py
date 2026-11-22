@@ -110,6 +110,8 @@ MUTANTS = [
      "plan", "P10"),
     ("idea without source", text(P, "- Source: eda\n", ""), "plan", "P10"),
     ("duplicate idea", text(P, "### H2 -", "### H1 -"), "plan", "P10"),
+    ("no out of scope", text(P, "## Out of scope", "## Excluded"), "plan", "P11"),
+    ("no assumptions", text(P, "## Assumptions", "## Defaults"), "plan", "P11"),
     ("approval invented", text(P, '**Approved**: 2026-11-20 - user: "approved, 10 iterations"', "**Approved**: ok"),
      "plan", "A1"),
     ("plan not approved", text(P, '**Approved**: 2026-11-20 - user: "approved, 10 iterations"\n', ""), "round", "R0"),
@@ -253,14 +255,14 @@ def test_deliver_promote_hands_over_to_mlops(root, capsys):
     delivery = (root / R / "delivery.md").read_text()
     assert "## Decision\n\npromote" in delivery and "Do the sensor signals predict" in delivery
     assert "z-score of s000" in delivery and "validate_verification.py secom` exited 0" in delivery
-    spec = (root / ".specs/features/secom-mlops/spec.md").read_text()
+    spec = (root / ".specs/features/secom-mlops/plan.md").read_text()
     assert "**Lane**: build" in spec and "**Round**: secom" in spec and "dfdee50fa862a2c3" in spec
     assert "validate_prod.py secom-mlops" in spec
 
 
 def test_plan_template_validates_as_shown(root):
     reference = (SKILLS / "agent-spec-modeling" / "references" / "plan.md").read_text()
-    plan = re.search(r"```markdown\n(.*?)\n```", reference, re.DOTALL).group(1)
+    plan = re.search(r"`````markdown\n(.*?)\n`````", reference, re.DOTALL).group(1)
     plan = re.sub(r"(?m)^\*\*Approved\*\*:.*$", '**Approved**: 2026-11-22 - user: "go"', plan)
     (root / P).write_text(plan)
     (root / ".specs/split.lock").write_text(re.search(r"```json\n(.*?)\n```", reference, re.DOTALL).group(1))

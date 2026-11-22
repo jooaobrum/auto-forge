@@ -3,16 +3,16 @@
 ## The idea in one line
 
 Every piece of work - an app feature, a data pipeline, an ML model or an agent change - starts by telling the
-agent what you want, in whatever form you have. The agent turns it into a spec, decides **what will prove it
+agent what you want, in whatever form you have. The agent turns it into a plan, decides **what will prove it
 is done**, does the work, and closes it only when **a script, not a person reading traces, says it is done**.
 
 ## What you do, what the agent does
 
 | You | The agent |
 | --- | --- |
-| give a spec, design doc, problem, transcripts or just a sentence | reads it with the repo and turns it into a spec |
+| give a spec, design doc, problem, transcripts or just a sentence | reads it with the repo and turns it into a plan |
 | answer questions when the context is not clear | grills, in short rounds, each question with a recommended answer |
-| approve the spec (one line: `**Approved**: <date> - user: "<your words>"`) | plans, builds or experiments, runs every script, loops on failures |
+| approve the plan (one line: `**Approved**: <date> - user: "<your words>"`) | plans, builds or experiments, runs every script, loops on failures |
 | say whether to continue when the token budget runs out | stops and asks; records your words |
 | read `delivery.md` | writes it: goal, evidence, decision, commits |
 
@@ -21,8 +21,8 @@ You fill no config file and run no command.
 ## The router decides the lane
 
 **agent-spec-router** always runs first. It checks that the work is actionable (a goal and a way to prove
-it); if not it calls **agent-spec-grilling**, and **agent-spec-writer** drafts the spec. Then it routes by the
-proof:
+it); if not it calls **agent-spec-grilling**, and **agent-spec-writer** drafts the plan from the lane's plan
+guide. Then it routes by the proof:
 
 | What can prove it | Lane | Skill |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ build lane. A modeling round that ends in `promote` goes, through the router, to
 The first time in a project the router writes `.specs/LAB.md` and confirms it with you: how the eval runs,
 the glue that turns its output into results, the metrics and their bars, which files steer which tool or
 skill, the default Edit Scope, the domain skills to load and, for model work, the `## Problem`. Every later
-piece of work inherits it; a spec only says what differs.
+piece of work inherits it; a plan only says what differs.
 
 ## Domain skills load at fixed points
 
@@ -52,7 +52,7 @@ lives in ordinary skills. Each lane loads the ones LAB.md lists at three points:
 
 - **App and code** - agent-spec-lean: one plan with EARS criteria and one-way doors, checks with proofs, the
   build, an independent Verifier that injects mutations. The e2e suite's JUnit decides the gate.
-- **Pipeline** - agent-spec-pipeline: the spec carries a **data contract** (columns with type, required,
+- **Pipeline** - agent-spec-pipeline: the plan, a lean plan, carries a **data contract** (columns with type, required,
   unique, accepted values; rules for row count, freshness, custom SQL) and **golden rows**. A script compiles
   it into one SQL query; the agent runs the pipeline on a small fixture in a dev schema, runs the query there
   (Databricks notebook, Genie, SQL warehouse) and the gate requires zero violations.
@@ -65,8 +65,9 @@ agent-spec-experiment, for one Failure Mode at a time (a new model, or a new rou
 agent-spec-modeling instead; see [Data science end to end](#data-science-end-to-end)):
 
 1. **Diagnose** from the failing traces; if the cause is in code, it goes to the build lane.
-2. **Spec**: for an agent, a table of Cases - question and rubric always, the record ids to read or cite
-   when it is about retrieval, route, failure mode or tier only when that is evaluated; for a model, holdout
+2. **Plan**: the Problem, the Behavior in EARS, the Diagnosis, the Shape of the path the Cases take and one
+   hypothesis per variant with what it should move and risk. Its spec part: for an agent, a table of Cases -
+   question and rubric always, the record ids to read or cite when it is about retrieval, route, failure mode or tier only when that is evaluated; for a model, holdout
    slices. One metric gets a Target delta; the rest are pass bars or guardrails (input tokens +15%, latency
    +20% by default).
 3. **Baseline** every Case once, then up to 3 **variants**. Each variant runs only what it can affect: Target
@@ -93,7 +94,7 @@ standard-library scripts. The rules come from the gates of ds-factory's `exp-hil
   2. MODELING lane: split lock -> EDA -> baseline -> rounds, one change each
         |     gate: validate_plan   [you] approve the plan
         |     gate: validate_round  gate: validate_verification (PASS on OOT)
-        v     delivery: promote  (deliver.py writes <slug>-mlops/spec.md)
+        v     delivery: promote  (deliver.py seeds <slug>-mlops/plan.md)
   3. MLOPS lane: notebook -> production code, tests, organized MLflow
         |     gate: validate_prod
         v
@@ -170,7 +171,7 @@ becomes production code, classes or functions as the team prefers, with tests an
   commit).
 
 **4. Promotion** (`promote.py` in the mlops lane). It applies the experiment lane's gate to a promotion, with
-the same Results-file shape: the Cases are slices of the recent period (`## Promotion` of the mlops spec), the
+the same Results-file shape: the Cases are slices of the recent period (`## Promotion` of the mlops plan), the
 Baseline is the champion, the Variant is the challenger, and each run is a paired bootstrap resample (at least
 20). No slice may regress beyond its tolerance, and the target gain over the Target slices needs the min gain
 and a 95% CI above zero. Then you OK the alias swap: `promote.py approve` records your words in
@@ -207,7 +208,7 @@ writes `self-verified (degraded - no sub-agent)` and its gate warns.
 
 ## Where it lives
 
-Every piece of work has a folder, `.specs/features/<slug>/`: the spec, the runs, the results table, the
+Every piece of work has a folder, `.specs/features/<slug>/`: the plan, the runs, the results table, the
 budget log and the delivery. MLflow or the test runner keeps the raw runs; this folder keeps why the work
 was done, what was tried, what the evidence said and what was decided.
 

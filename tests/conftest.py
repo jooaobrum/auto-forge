@@ -77,9 +77,19 @@ def spec_text(cases: str = "", *, target: str = "+0.1", targets: str = "q01", sc
 **Target cases**: {targets}
 {extra}
 
-## Goal
+## Problem
 
-The agent cites the history records it reads.
+The agent reads the history records but cites a third of them.
+
+## Diagnosis
+
+A synthesis failure, not retrieval. Cause class: behavioral.
+
+## Hypotheses
+
+### H1 - cite-ids
+- Idea: tell the history skill to cite the id of every record used
+- Why: the records were read; only the citation was missing
 
 ## Cases
 
@@ -128,7 +138,7 @@ class Host:
         self.write(f".specs/features/{slug}/runs/{variant}/{name}.json", json.dumps({"runs": runs}))
 
     def spec(self, slug: str = "exp", text: str | None = None, **kwargs) -> None:
-        self.write(f".specs/features/{slug}/spec.md", text if text is not None else spec_text(**kwargs))
+        self.write(f".specs/features/{slug}/plan.md", text if text is not None else spec_text(**kwargs))
 
 
 @pytest.fixture

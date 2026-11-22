@@ -12,4 +12,4 @@ cp verify/verification.md $W/verification.md
 git add -A && git commit -qm "verify(secom): verifier subagent on OOT"
 modeling validate_verification secom
 modeling deliver secom --decision promote
-test -f .specs/features/secom-mlops/spec.md
+test -f .specs/features/secom-mlops/plan.md

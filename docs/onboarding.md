@@ -6,9 +6,9 @@ takes about 30 minutes.
 ## 1. The idea in five sentences
 
 1. You describe what you want, in any form: a spec, a design doc, a ticket, a meeting transcript, a sentence.
-2. The agent turns it into **one spec** for that piece of work and asks you about whatever is unclear.
-3. Before anything is built, the spec says **what will prove the work is done**.
-4. You approve the spec, and the agent builds or experiments until a **script** says the proof passes.
+2. The agent turns it into **one plan** for that piece of work and asks you about whatever is unclear.
+3. Before anything is built, the plan says **what will prove the work is done**.
+4. You approve the plan, and the agent builds or experiments until a **script** says the proof passes.
 5. You read `delivery.md`: the goal, the evidence, the decision, the commits.
 
 You never fill a config file and never run the scripts yourself. You talk, approve and read.
@@ -17,7 +17,7 @@ You never fill a config file and never run the scripts yourself. You talk, appro
 
 | Word | Meaning |
 | --- | --- |
-| **spec** | the one document of a piece of work: `.specs/features/<slug>/spec.md` |
+| **plan** | the one document every piece of work starts with: `.specs/features/<slug>/plan.md` |
 | **lane** | how the work is proven: **build** (a test or a data contract) or **research** (a rate over a dataset) |
 | **profile** | what you are building: `app`, `pipeline`, `model` or `agent` |
 | **case** | one thing the research gate judges: a question for an agent, a slice of the holdout for a model |
@@ -48,7 +48,7 @@ KEEP=1 bash examples/agent/run.sh
 Near the top it prints `host kept at /tmp/...`. Open that folder and read, in this order:
 
 1. `.specs/LAB.md` - what the agent knows about this (fake) project
-2. `.specs/features/cite-history/spec.md` - the Experiment: a failure mode, three questions, a target
+2. `.specs/features/cite-history/plan.md` - the Experiment: a failure mode, three questions, a target
 3. `.specs/features/cite-history/results.md` - the per-case verdict of the winning variant
 4. `.specs/features/cite-history/delivery.md` - what you would read at the end
 
@@ -67,7 +67,7 @@ What happens next:
    your tests or evals run, which metrics matter, which files steer your agent. Answer; it never asks again.
 2. **If your context is unclear**, it grills you: numbered questions, each with a recommended answer.
    Answering "yes" accepts the recommendation; otherwise say what you want.
-3. **It shows you the spec** and stops. Read the goal and the proof. When you agree, tell it to approve -
+3. **It shows you the plan** and stops. Read the goal and the proof. When you agree, tell it to approve -
    it writes `**Approved**: <date> - user: "<your words>"` with your words.
 4. **It works.** In the build lane it plans, writes tests, builds and has an independent reviewer check it.
    In the research lane it records a baseline and tries variants. You can watch or walk away.
@@ -75,7 +75,7 @@ What happens next:
 6. **It reports `delivery.md`.** For an Experiment, the decision is one of:
    - **adopt** - the change goes in;
    - **reject** - the idea did not work, and the evidence says why;
-   - **promote** - it works, but the fix belongs in code, so a build-lane spec was created for it.
+   - **promote** - it works, but the fix belongs in code, so a build-lane plan was seeded for it.
 
 ## 6. Which lane will my work take?
 
@@ -103,10 +103,10 @@ You do not choose: the router does, and tells you why.
 
 | You see | It means | Do |
 | --- | --- | --- |
-| "no **Approved**: line" | the spec is not approved yet | read it and approve, or ask for changes |
-| "variant cap reached" | 3 variants tried, none passed | read `results.md` and decide: reject, or change the hypothesis in a new spec |
+| "no **Approved**: line" | the plan is not approved yet | read it and approve, or ask for changes |
+| "variant cap reached" | 3 variants tried, none passed | read `results.md` and decide: reject, or change the hypothesis in a new plan |
 | "budget spent" | the token budget is used up | say whether to continue and how much |
-| "outside Edit Scope" | the agent changed a file it was not allowed to | ask it to revert, or widen the scope in the spec |
+| "outside Edit Scope" | the agent changed a file it was not allowed to | ask it to revert, or widen the scope in the plan |
 | "stale or missing Baseline" | the code behind some cases changed since the baseline | the agent reruns those cases first |
 | "HALT .specs/HALT exists" | someone stopped every lane script | delete `.specs/HALT` when the work may go on |
 

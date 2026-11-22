@@ -34,7 +34,9 @@ A platform skill (Databricks, MLflow) comes from there; nothing here needs one.
 3. **EDA on train only** ([eda.md](references/eda.md)), into `.specs/features/<slug>/eda.md`.
 4. **Backlog** with the user ([ideas.md](references/ideas.md)): hypotheses `H<n>`, each with an idea, a why and
    a source.
-5. Fill [references/plan.md](references/plan.md) into `plan.md`; `validate_plan.py <slug>` must exit 0.
+5. Write `plan.md` from [references/plan.md](references/plan.md) (agent-spec-writer drafts it): the question,
+   the metric and the bar, the data, the Shape of the path a row takes to a score, the backlog with what each
+   hypothesis should move and risks, Out of scope and Assumptions. `validate_plan.py <slug>` must exit 0.
 6. The user approves the backlog and the budget: `**Approved**: <date> - user: "<their words>"`, then
    `validate_plan.py <slug> --approved`. Only the baseline may run before.
 
@@ -77,7 +79,7 @@ plan's Max drop is a finding, not something to fix on the OOT.
 ## 4. Deliver
 
 `deliver.py <slug> --decision promote|reject` writes `delivery.md`. `promote` needs the Verification to pass and
-writes `.specs/features/<slug>-mlops/spec.md`: hand it to agent-spec-router, which routes it to
+seeds `.specs/features/<slug>-mlops/plan.md`: hand it to agent-spec-router, which routes it to
 agent-spec-mlops. A model already in production that fails on some slices is not a new round: the router sends
 it to agent-spec-experiment.
 

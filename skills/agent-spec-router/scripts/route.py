@@ -34,12 +34,14 @@ def folder(root: Path, slug: str) -> Path:
     return root / ".specs" / "features" / slug
 
 
-def _spec_text(root: Path, slug: str) -> str:
-    for name in ("spec.md", "plan.md"):
-        path = folder(root, slug) / name
-        if path.exists():
-            return path.read_text()
-    raise RouteError(f".specs/features/{slug}/ has no spec.md or plan.md")
+LEAN_PLAN = Path(__file__).resolve().parents[2] / "agent-spec-lean" / "scripts" / "validate_plan.py"
+
+
+def _plan_text(root: Path, slug: str) -> str:
+    path = folder(root, slug) / "plan.md"
+    if not path.exists():
+        raise RouteError(f".specs/features/{slug}/plan.md is missing - agent-spec-writer drafts it")
+    return path.read_text()
 
 
 def _git(root: Path, *args: str) -> str:
@@ -92,9 +94,23 @@ def problem(root: Path) -> tuple[list[str], list[str]]:
     return findings, warnings
 
 
+def lean_plan(root: Path, slug: str) -> tuple[int, str]:
+    """A build-lane plan is a lean plan: agent-spec-lean's validate_plan.py judges its structure."""
+    if not LEAN_PLAN.exists():
+        raise RouteError(f"{LEAN_PLAN} is missing - install agent-spec-lean next to agent-spec-router")
+    done = subprocess.run([sys.executable, str(LEAN_PLAN), slug, "--root", str(root)], check=False,
+                          capture_output=True, text=True)
+    return done.returncode, (done.stdout + done.stderr).strip()
+
+
 def freeze(root: Path, slug: str) -> str:
-    if not spec_md.APPROVED.search(_spec_text(root, slug)):
-        raise RouteError("no **Approved**: line - the user approves the spec first")
+    text = _plan_text(root, slug)
+    if not spec_md.APPROVED.search(text):
+        raise RouteError("no **Approved**: line - the user approves the plan first")
+    if spec_md.field(text, "Lane").lower() == "build":
+        code, out = lean_plan(root, slug)
+        if code != 0:
+            raise RouteError(f"the plan does not pass agent-spec-lean's validate_plan.py:\n{out}")
     commit = _git(root, "rev-parse", "HEAD").strip()
     (folder(root, slug) / "frozen.json").write_text(json.dumps({"commit": commit}, indent=2))
     return commit
@@ -137,7 +153,7 @@ def deliver(root: Path, slug: str) -> str:
     last = json.loads((work / "gate.json").read_text())
     if last["exit"] != 0:
         raise RouteError("the last gate failed: " + "; ".join(last["findings"]))
-    text = _spec_text(root, slug)
+    text = _plan_text(root, slug)
     goal = spec_md.section(text, "Goal") or spec_md.section(text, "Problem")
     since = json.loads((work / "frozen.json").read_text())["commit"] if (work / "frozen.json").exists() else None
     commits = _git(root, "log", "--oneline", f"{since}..HEAD").strip() if since else "not frozen"

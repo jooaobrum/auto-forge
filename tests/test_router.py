@@ -1,6 +1,6 @@
 import re
 
-from conftest import SKILLS
+from conftest import ROOT, SKILLS
 
 ROUTER = (SKILLS / "agent-spec-router" / "SKILL.md").read_text()
 DESCRIPTION = re.search(r"^description:\s*(.+)$", ROUTER, re.MULTILINE).group(1)
@@ -28,8 +28,8 @@ def test_router_grills_when_not_actionable():
 
 def test_router_reroutes_promote():
     body = ROUTER.split("## 4. Take back a promote")[1]
-    assert "`promote`" in body and "build lane" in body and "<slug>-build/spec.md" in body
-    assert "<slug>-mlops/spec.md" in body and "**agent-spec-mlops**" in body
+    assert "`promote`" in body and "build lane" in body and "<slug>-build/plan.md" in body
+    assert "<slug>-mlops/plan.md" in body and "**agent-spec-mlops**" in body
 
 
 def test_router_writes_lab_once():
@@ -40,13 +40,19 @@ def test_router_writes_lab_once():
 
 
 def test_route_freeze_junit_deliver(host):
-    host.write(".specs/features/a/spec.md", "# Sum\n\n**Profile**: app\n**Lane**: build\n\n## Goal\n\nA total.\n")
+    code, out = host.route("freeze", "a")
+    assert code == 2 and "plan.md is missing" in out
+    host.write(".specs/features/a/plan.md", "# Sum\n\n**Profile**: app\n**Lane**: build\n\n## Problem\n\nA total.\n")
     host.commit()
     code, out = host.route("freeze", "a")
     assert code == 2 and "no **Approved**: line" in out
-    host.write(".specs/features/a/spec.md", "# Sum\n\n**Profile**: app\n**Lane**: build\n"
-               "**Approved**: 2026-11-22 - user: \"go\"\n\n## Goal\n\nA total.\n")
-    assert host.route("freeze", "a")[0] == 0
+    host.write(".specs/features/a/plan.md", "# Sum\n\n**Profile**: app\n**Lane**: build\n"
+               "**Approved**: 2026-11-22 - user: \"go\"\n\n## Problem\n\nA total.\n")
+    code, out = host.route("freeze", "a")
+    assert code == 2 and "validate_plan.py" in out and "Shape" in out
+    host.write(".specs/features/a/plan.md", (ROOT / "examples/app/host/.specs/features/sum/plan.md").read_text())
+    code, out = host.route("freeze", "a")
+    assert code == 0, out
     code, out = host.route("deliver", "a")
     assert code == 2 and "no gate has run" in out
     xml = ('<testsuites><testsuite>{}</testsuite></testsuites>')
@@ -67,4 +73,4 @@ def test_route_freeze_junit_deliver(host):
     code, out = host.route("deliver", "a")
     assert code == 0, out
     text = (host.root / ".specs/features/a/delivery.md").read_text()
-    assert "A total." in text and "route.py junit a" in text and "feat: sum" in text
+    assert "sees their total" in text and "route.py junit a" in text and "feat: sum" in text

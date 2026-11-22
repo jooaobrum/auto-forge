@@ -14,17 +14,18 @@ script is standard-library Python in `<skill-dir>/scripts/`. Exit codes: `0` pas
 ## Load points
 
 Read `.specs/LAB.md` `## Domain skills` and load the skills listed for each point when you reach it:
-**plan** (before the spec), **work** (before writing the pipelines), **verify** (before the gate). The platform
+**plan** (before the plan), **work** (before writing the pipelines), **verify** (before the gate). The platform
 skill lives there: Databricks bundles, Unity Catalog and MLflow conventions (`data-databricks-sql`,
 `ml-mlflow-log` are the examples). Nothing here needs one; with `platform: databricks` in the config the
 Databricks rules (D5, the Unity Catalog registry of D10) apply.
 
 ## 1. Plan
 
-The input is `.specs/features/<slug>-mlops/spec.md`, written by agent-spec-modeling's `deliver.py --decision
-promote`: the round and its best experiment (`validate_verification.py` passed). Complete it from
-[references/spec-mlops.md](references/spec-mlops.md). The user approves it (`**Approved**:` in their words);
-commit, then `route.py freeze <slug>` (agent-spec-router).
+The input is `.specs/features/<slug>-mlops/plan.md`, seeded by agent-spec-modeling's `deliver.py --decision
+promote`: the round and its best experiment (`validate_verification.py` passed). The research is done, so this
+is build work: complete it with agent-spec-writer from [references/plan.md](references/plan.md), agent-spec-lean's
+plan plus the data contract of the tables the pipelines write, the proof and the promotion. The user approves it (`**Approved**:` in their words);
+commit, then `route.py freeze <slug>` (agent-spec-router), which runs lean's `validate_plan.py`.
 
 ## 2. Work
 
@@ -53,7 +54,7 @@ deploy and any alias change in `qa` or `prod` need the user's explicit OK.
 
 ## 5. Promote
 
-[references/promote.md](references/promote.md): add `## Promotion` to the spec (champion, challenger, metric,
+[references/promote.md](references/promote.md): add `## Promotion` to the plan (champion, challenger, metric,
 slices), backtest both versions on the recent period into `runs/champion/` and `runs/challenger/`, then
 `promote.py gate <slug>`. No slice may regress and the target gain needs a CI above zero. Show `promotion.md`;
 on the user's OK, `promote.py approve <slug> --user "<their words>"`, then move the alias. Rollback is the

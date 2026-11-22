@@ -40,3 +40,15 @@ none (no lesson applies)
 - Idea: take s000 out of the baseline's DROP list
 - Why: the EDA showed a univariate AUC of 0.82 on s000, the highest of the sensors
 - Source: eda
+
+## Out of scope
+
+| Excluded | Why |
+| --- | --- |
+| image data | the round asks about the sensors |
+
+## Assumptions
+
+| Assumption | Chosen default | Rationale | Confirmed? |
+| --- | --- | --- | --- |
+| period | week | lots are reviewed weekly | y |

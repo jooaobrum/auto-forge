@@ -1,4 +1,4 @@
-"""agent-spec-pipeline: compile the spec's data contract into one SQL query, and gate its results.
+"""agent-spec-pipeline: compile the plan's data contract into one SQL query, and gate its results.
 
 Usage: python3 contract.py [--root <repo>] compile <slug> [--dialect spark|sqlite]
        python3 contract.py [--root <repo>] gate <slug>
@@ -79,7 +79,7 @@ def from_odcs(root: Path) -> dict:
         import yaml
     except ImportError as exc:
         raise ContractError(f"{files[0].name} is ODCS YAML and pyyaml is not installed - install pyyaml, "
-                            "or put the contract in the spec's ## Data contract section") from exc
+                            "or put the contract in the plan's ## Data contract section") from exc
     try:
         return yaml.safe_load(files[0].read_text()) or {}
     except yaml.YAMLError as exc:
@@ -212,13 +212,13 @@ def work_dir(root: Path, slug: str) -> Path:
 
 
 def compile_work(root: Path, slug: str, dialect: str) -> list[str]:
-    spec_path = work_dir(root, slug) / "spec.md"
+    spec_path = work_dir(root, slug) / "plan.md"
     if not spec_path.exists():
-        raise ContractError(f".specs/features/{slug}/spec.md is missing")
+        raise ContractError(f".specs/features/{slug}/plan.md is missing")
     text = spec_path.read_text()
     contract = from_spec(text) or from_odcs(root)
     if not contract:
-        raise ContractError("no contract: add a ## Data contract section to the spec, or an ODCS file in contracts/")
+        raise ContractError("no contract: add a ## Data contract section to the plan, or an ODCS file in contracts/")
     golden = [row for row in spec_md.table(spec_md.section(text, "Golden rows")) if any(row.values())]
     sql, cases = compile_contract(contract, dialect, golden)
     (work_dir(root, slug) / "contract.sql").write_text(sql)

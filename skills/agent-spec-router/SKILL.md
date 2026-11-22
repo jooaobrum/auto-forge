@@ -6,8 +6,8 @@ description: Use first for any piece of work - an app feature, a data pipeline, 
 # Agent Spec Router
 
 The one entry. The user talks and gives context; you do everything else, scripts included. Vocabulary:
-**Profile** (`app`, `pipeline`, `model`, `agent`), **lane** (`build`, `research`), **spec** (the one document of
-a piece of work, `.specs/features/<slug>/spec.md`).
+**Profile** (`app`, `pipeline`, `model`, `agent`), **lane** (`build`, `research`), **plan** (the one document of
+a piece of work, `.specs/features/<slug>/plan.md`; every piece of work starts with one).
 
 ## 1. Know the project
 
@@ -79,7 +79,7 @@ you change a confirmed Problem.
 
 It is actionable when you can state the goal (what changes for a user) and how it will be proven. When it
 names no goal or no way to prove it, call **agent-spec-grilling** before routing. When there is context but no
-spec, call **agent-spec-writer** to draft one from the lane's template.
+plan - a PRD, a design doc, a ticket, notes - call **agent-spec-writer** to draft one from the lane's plan guide.
 
 ## 3. Route by the proof
 
@@ -95,20 +95,20 @@ Model work starts with a confirmed `## Problem` (section 1). A model with no cha
 model's backlog, goes to agent-spec-modeling. A model already in production that gets some slices wrong is a
 Failure Mode judged on holdout slices: agent-spec-experiment.
 
-Write the Profile and the lane into the spec (`**Profile**:`, `**Lane**:`) and hand over.
+Write the Profile and the lane into the plan (`**Profile**:`, `**Lane**:`) and hand over.
 
 ## 4. Take back a promote
 
-When an Experiment's delivery says `promote`, its fix belongs in code: read `.specs/features/<slug>-build/spec.md`
-and route it to the build lane. When a round's delivery says `promote`, its best experiment goes to production:
-read `.specs/features/<slug>-mlops/spec.md` and hand it to **agent-spec-mlops**. Every hand-off between lanes
+When an Experiment's delivery says `promote`, its fix belongs in code: read `.specs/features/<slug>-build/plan.md`,
+have agent-spec-writer complete it as a lean plan, and route it to the build lane. When a round's delivery says `promote`, its best experiment goes to production:
+read `.specs/features/<slug>-mlops/plan.md` and hand it to **agent-spec-mlops**. Every hand-off between lanes
 passes through here.
 
 ## Build-lane bookkeeping
 
-For build work, run `python3 <skill-dir>/scripts/route.py freeze <slug>` once the spec has its
-`**Approved**:` line. For an app, judge the e2e JUnit with `route.py junit <slug>` (results in
-`runs/main/*.xml`). Close with `route.py deliver <slug>` once a gate passed and report `delivery.md`.
+For build work, run `python3 <skill-dir>/scripts/route.py freeze <slug>` once the plan has its
+`**Approved**:` line; it refuses a plan that does not pass agent-spec-lean's `validate_plan.py`. For an app,
+judge the e2e JUnit with `route.py junit <slug>` (results in `runs/main/*.xml`). Close with `route.py deliver <slug>` once a gate passed and report `delivery.md`.
 
 ## Halt
 

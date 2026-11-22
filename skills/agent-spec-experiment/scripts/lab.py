@@ -1,4 +1,4 @@
-"""The work folder, the spec merged with `.specs/LAB.md` and its defaults, Results files, the surface and git."""
+"""The work folder, the plan merged with `.specs/LAB.md` and its defaults, Results files, the surface and git."""
 
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ class Work:
 
     def frozen(self) -> dict:
         if not self.path("frozen.json").exists():
-            raise LabError(f"{self.slug} is not frozen - freeze it after the user approves the spec")
+            raise LabError(f"{self.slug} is not frozen - freeze it after the user approves the plan")
         return self.read_json("frozen.json")
 
 
@@ -71,7 +71,7 @@ def git(root: Path, *args: str) -> str:
     return done.stdout
 
 
-# --- the spec, merged with LAB.md -----------------------------------------------------------------------------
+# --- the plan, merged with LAB.md -----------------------------------------------------------------------------
 
 def frac(value) -> Fraction:
     return Fraction(str(value).strip().lstrip("+").rstrip("%").strip())
@@ -154,9 +154,9 @@ def lab_text(root: Path) -> str:
 
 
 def load_spec(work: Work) -> Spec:
-    path = work.path("spec.md")
+    path = work.path("plan.md")
     if not path.exists():
-        raise LabError(f".specs/features/{work.slug}/spec.md is missing")
+        raise LabError(f".specs/features/{work.slug}/plan.md is missing")
     text, lab = path.read_text(), lab_text(work.root)
     spec = Spec(text=text)
     spec.profile = spec_md.field(text, "Profile").lower()

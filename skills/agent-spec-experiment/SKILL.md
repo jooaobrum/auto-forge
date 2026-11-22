@@ -5,21 +5,23 @@ description: Research lane for agent or model behavior that only a rate over a d
 
 # Agent Spec Experiment
 
-One Experiment, one Failure Mode, one spec at `.specs/features/<slug>/spec.md`. You run every script:
+One Experiment, one Failure Mode, one plan at `.specs/features/<slug>/plan.md`. You run every script:
 `python3 <skill-dir>/scripts/experiment.py [--root <repo>] <command> <slug>`. Exit codes: `0` ok, `1` gate
 fail, `2` invalid input, `3` variant cap, `4` budget spent, `5` halted (`.specs/HALT` exists).
 
 ## Load points
 
 Read `.specs/LAB.md` `## Domain skills` and load the skills listed for each point when you reach it:
-**plan** (before the spec), **work** (before running variants), **verify** (before gating).
+**plan** (before the plan), **work** (before running variants), **verify** (before gating).
 
 ## 1. Plan
 
 - **Diagnose.** Read the failing traces (error analysis, 20-50 outputs), name one Failure Mode and its
   cause class. Deterministic (fixable in code) → tell agent-spec-router: it belongs in the build lane.
-- **Spec.** Fill `references/spec-agent.md` or `references/spec-model.md` (agent-spec-writer can draft it).
-  Settings come from the spec, then `.specs/LAB.md`, then defaults: 3 variants, k target 3 / affected 1 /
+- **Plan.** Write it from [references/plan.md](references/plan.md) (agent-spec-writer drafts it): the
+  Problem, the Behavior and its Cases, the Metrics, then the Diagnosis, the Shape of the path the Cases take,
+  one hypothesis per variant and the Edit Scope. `freeze` refuses it without a Problem, a Diagnosis and
+  Hypotheses. Settings come from the plan, then `.specs/LAB.md`, then defaults: 3 variants, k target 3 / affected 1 /
   stable 1, guardrails `input_tokens` +15% and `latency_ms` +20%. Propose pass bars from the Baseline numbers.
 - The user writes `**Approved**:`; commit, then `experiment.py freeze <slug>`.
 
@@ -45,5 +47,6 @@ When `select` or `budget` exits `4`, stop and ask the user whether to continue; 
 ## 4. Deliver
 
 `experiment.py deliver <slug> --decision adopt|promote|reject`, then report `delivery.md`. `promote` writes
-`.specs/features/<slug>-build/spec.md`: hand it to agent-spec-router. Cases listed under "Proposed for
+`.specs/features/<slug>-build/plan.md`, a seed agent-spec-writer completes as a lean plan: hand it to
+agent-spec-router. Cases listed under "Proposed for
 regression" get `regression` in their Tier once the user agrees.
