@@ -1,0 +1,32 @@
+{
+  "model": {
+    "name": "workspace.poc_secom_dev.secom_fail",
+    "version": 3,
+    "alias": "challenger"
+  },
+  "git_commit": "a1b2c3d",
+  "config_env": "dev",
+  "data": [
+    {
+      "table": "workspace.curated.secom",
+      "version": 12
+    }
+  ],
+  "mlflow_run_id": "0123456789abcdef0123456789abcdef",
+  "experiment": {
+    "round": "secom",
+    "id": "dfdee50fa862a2c3",
+    "valid_metric": 0.571
+  },
+  "reproducibility": {
+    "metric": "pr_auc",
+    "prod_valid_metric": 0.569,
+    "tolerance": 0.01,
+    "seed": 42,
+    "lockfile_sha256": "19fc54824208040069e4020305cd6a520301fc4776fa0645bba5a6f4fd0fecce"
+  },
+  "metrics": {
+    "valid": 0.569,
+    "oot": 0.48
+  }
+}

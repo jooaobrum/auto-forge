@@ -1,0 +1,22 @@
+{
+  "$comment": "Check library for the modeling lane: WHAT must be proven, not HOW. `reported_in` says where the result appears and which gate checks it; `pattern` points to the example in this skill's references. A confirmed lesson becomes a check here.",
+  "version": 3,
+  "checks": {
+    "CHK-LEAK-003": {"title": "Causal features: the training ones do not change when future rows enter", "reported_in": "ledger.json, every iteration (validate_round R9)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-LEAK-001": {"title": "No variable with univariate AUC >= 0.98 in train and valid (binary target)", "reported_in": "ledger.json, every iteration (validate_round R9)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-DUP-001": {"title": "No feature vector repeated between train and valid", "reported_in": "ledger.json, every iteration (validate_round R9)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-GAIN-001": {"title": "Kept only with gain >= min gain and a paired-bootstrap CI above 0", "reported_in": "ledger.json delta/ci (validate_round R6)", "pattern": "patterns/iteration.md"},
+    "CHK-OOT-001": {"title": "The round's code does not cite the holdout or its dates", "reported_in": "scan of src/ and notebooks/ (validate_round R11)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-SPLIT-004": {"title": "split.lock with three ordered windows and counts", "reported_in": ".specs/split.lock (validate_plan P6)", "pattern": "patterns/split.md"},
+    "CHK-OOT-002": {"title": "Drop between valid and OOT within the plan's limit", "reported_in": "verification.md (validate_verification V4)", "pattern": "verify.md"},
+    "CHK-MUT-001": {"title": "Mutation: a shuffled target brings the metric to chance level", "reported_in": "verification.md (validate_verification V5)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-MUT-002": {"title": "Mutation: a future column makes CHK-LEAK-001 fail", "reported_in": "verification.md (validate_verification V5)", "pattern": "patterns/leakage-checks.md"},
+    "CHK-SPLIT-002": {"title": "No group (batch, wafer, entity) in two splits", "reported_in": "when the recipe asks", "pattern": "patterns/split.md"},
+    "CHK-IMB-001": {"title": "Realistic prevalence in valid and OOT, no resampling outside train", "reported_in": "when the recipe asks", "pattern": "recipes/small-imbalanced.md"},
+    "CHK-IMB-002": {"title": "Threshold chosen on valid, never on OOT", "reported_in": "when the recipe asks", "pattern": "statistics.md"},
+    "CHK-DUP-002": {"title": "No near-duplicates between splits (embedding similarity)", "reported_in": "when the recipe asks", "pattern": "recipes/backbone-selection.md"},
+    "CHK-ADV-001": {"title": "Adversarial validation train vs OOT (alert)", "reported_in": "verification.md, optional", "pattern": "verify.md"}
+  },
+  "iteration_required": {"always": ["CHK-LEAK-003", "CHK-DUP-001"], "binary": ["CHK-LEAK-001"]},
+  "mutations": ["CHK-MUT-001", "CHK-MUT-002"]
+}

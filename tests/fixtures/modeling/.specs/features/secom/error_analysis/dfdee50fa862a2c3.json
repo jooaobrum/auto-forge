@@ -1,0 +1,18 @@
+{
+  "task": "binary",
+  "n": 147,
+  "confusion": {
+    "threshold": 0.9872890162782587,
+    "tp": 3,
+    "fp": 0,
+    "tn": 140,
+    "fn": 4,
+    "precision": 1.0,
+    "recall": 0.42857142857142855
+  },
+  "summary": [
+    "FN-heavy (4 FN vs 0 FP at 0.987): missing signal for the positive class",
+    "over-confident top decile (score 0.93, rate 0.20)",
+    "by period: worst 2008-09-16/2008-09-22 (pr_auc 0.500) vs best 2008-09-23/2008-09-29 (0.694)"
+  ]
+}

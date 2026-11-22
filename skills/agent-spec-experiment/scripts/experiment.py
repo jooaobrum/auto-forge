@@ -1,7 +1,8 @@
 """agent-spec-experiment: freeze, baseline, select, gate, budget and deliver one Experiment.
 
 Usage: python3 experiment.py [--root <repo>] <command> <slug> [options]
-Exit: 0 ok, 1 gate fail, 2 invalid input, 3 variant cap, 4 budget spent - stop and ask the user.
+Exit: 0 ok, 1 gate fail, 2 invalid input, 3 variant cap, 4 budget spent - stop and ask the user,
+5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
@@ -423,6 +424,10 @@ def _run(args) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     try:
         return _run(args)
     except LabError as exc:

@@ -51,6 +51,14 @@ _Avoid_: feature, ticket, task
 One unit of work in the research lane, ending in a Decision.
 _Avoid_: tuning, iteration, attempt, run
 
+**Subagent**:
+A fresh context the main session dispatches for one step, which returns a short result: the verifier and the modeling iteration runner in `agents/`. A lane is never a subagent: it stops for the user's gates, and its files are the contract between steps.
+_Avoid_: worker, lane agent
+
+**Fallback**:
+On a platform with no subagents, a step run in a new chat instead, declared in its file: `**Verifier**: fresh-context` with `**Fallback**: <platform> - <why>`. The gate accepts it with a warning.
+_Avoid_: self-verified
+
 ## Experiment
 
 **Diagnosis**:
@@ -127,11 +135,15 @@ _Avoid_: adapter, report, output
 The schema and quality rules a pipeline's output dataset promises its readers, each rule a Case.
 _Avoid_: expectations, schema file, validation
 
-## Data science (planned)
+## Data science
 
 **Problem**:
-The section of LAB.md the router fills before any model work: target, label rule, prediction time, cost of false positives and false negatives, metric.
+The section of LAB.md the router fills before any model work and the user confirms: target, label rule, prediction time, exclusions, cost of false positives and false negatives, metric, and the label rule's SQL check.
 _Avoid_: target doc, discovery
+
+**Data kind**:
+What a modeling round learns from, `tabular` or `image`; the plan declares it next to `**Profile**: model`.
+_Avoid_: profile
 
 **Split lock**:
 The file fixing the train, valid and OOT time windows and their row counts before any EDA or training.
@@ -150,3 +162,11 @@ The model version serving in production under the production alias.
 
 **Challenger**:
 A new model version that takes the Champion's alias only when no slice regresses and the user agrees.
+
+**Promotion**:
+The gate between Challenger and Champion: per slice of the recent period, on paired resamples, no slice regresses and the target gain has a CI above zero; then the user's OK for the alias swap.
+_Avoid_: deploy, release
+
+**HALT**:
+The file `.specs/HALT`: while it exists, every lane script exits 5 before doing anything.
+_Avoid_: kill switch, pause

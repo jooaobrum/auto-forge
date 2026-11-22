@@ -37,6 +37,8 @@ import re
 import subprocess
 import sys
 
+import lean_config
+
 from lean_config import _section, plan_approved, plan_marks_binding, plan_owes_pictures, read_mutations
 
 PROOF_RE = re.compile(r"^\**\s*Proof\s*\**\s*:\s*(.+)$", re.IGNORECASE)
@@ -439,6 +441,10 @@ def main(argv=None):
     p.add_argument("--allow-empty", action="store_true",
                    help="Exit 0 when there is no completed feature to gate (repo-wide sweeps)")
     args = p.parse_args(argv)
+    halt = lean_config.halted(args.root)
+    if halt:
+        print(halt)
+        return lean_config.HALT_EXIT
     root = os.path.abspath(args.root)
 
     targets = _resolve(root, args.feature)

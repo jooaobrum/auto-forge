@@ -1,7 +1,7 @@
 {
   "name": "auto-forge",
   "description": "Spec-driven agent workflows for apps, data pipelines, ML models and agents. Bring a spec or just context; auto-forge makes it actionable and routes it to the lane whose proof can close it - end-to-end tests, data contracts, or per-case evals on a dataset.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "author": {
     "name": "jooaobrum",
     "url": "https://github.com/jooaobrum"
@@ -14,6 +14,7 @@
     "evals",
     "data-contracts",
     "experiments",
+    "mlops",
     "agents",
     "databricks",
     "mlflow"

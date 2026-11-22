@@ -1,6 +1,6 @@
 [project]
 name = "auto-forge"
-version = "0.3.0"
+version = "0.4.0"
 description = "Spec-driven agent workflows for apps, data pipelines, ML models and agents."
 requires-python = ">=3.9"
 dependencies = []
@@ -11,7 +11,8 @@ dev-dependencies = ["pytest>=8", "ruff>=0.6", "pyyaml>=6"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--ignore=tests/fixtures"
 
 [tool.ruff]
 line-length = 120
-extend-exclude = ["skills/agent-spec-lean"]
+extend-exclude = ["skills/agent-spec-lean", "tests/fixtures"]

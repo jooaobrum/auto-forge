@@ -1,16 +1,19 @@
-"""agent-spec-router: freeze a build-lane piece of work, judge an app's e2e JUnit, and deliver it.
+"""agent-spec-router: check the Problem, freeze a build-lane piece of work, judge an app's e2e JUnit, deliver it.
 
-Usage: python3 route.py [--root <repo>] freeze <slug>
+Usage: python3 route.py [--root <repo>] problem             # .specs/LAB.md ## Problem, before any model work
+       python3 route.py [--root <repo>] freeze <slug>
        python3 route.py [--root <repo>] junit <slug>      # judges runs/main/*.xml
        python3 route.py [--root <repo>] deliver <slug>    # needs a passing gate.json (junit or contract.py)
 Research work is frozen, gated and delivered by agent-spec-experiment's experiment.py.
-Exit: 0 ok, 1 gate fail, 2 invalid input.
+Exit: 0 ok, 1 gate fail, 2 invalid input, 5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import json
+import re
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -44,6 +47,49 @@ def _git(root: Path, *args: str) -> str:
     if done.returncode != 0:
         raise RouteError(f"git {' '.join(args)} failed: {done.stderr.strip()}")
     return done.stdout
+
+
+def _label_check(path: Path) -> tuple[int, int]:
+    """Rows and mismatches from the label rule's result: JSON {"rows", "mismatches"} or a CSV with those columns."""
+    try:
+        if path.suffix.lower() == ".csv":
+            with path.open(newline="") as handle:
+                data = next(csv.DictReader(handle))
+        else:
+            data = json.loads(path.read_text())
+        return int(data["rows"]), int(data["mismatches"])
+    except (OSError, ValueError, KeyError, TypeError, StopIteration) as exc:
+        raise RouteError(f"{path.name}: expected rows and mismatches - {exc}") from exc
+
+
+def problem(root: Path) -> tuple[list[str], list[str]]:
+    """Findings and warnings on `## Problem`: the five facts, the user's confirmation, the label reproduced in SQL."""
+    lab = root / ".specs" / "LAB.md"
+    if not lab.exists():
+        raise RouteError(".specs/LAB.md is missing - write it first")
+    text = lab.read_text()
+    body = spec_md.section(text, "Problem")
+    if not body:
+        raise RouteError("no ## Problem section in .specs/LAB.md - interview the user and write it")
+    findings, warnings = spec_md.problem_findings(text), []
+    exclusions = spec_md.field(body, "Exclusions")
+    if not exclusions or exclusions.startswith("<"):
+        warnings.append('**Exclusions**: missing - the modeling plan needs it (write "none" when there are none)')
+    if not re.search(r"^```sql\s*\n\s*\S.*?^```", body, re.MULTILINE | re.DOTALL):
+        findings.append("no ```sql block: write the label rule as SQL over the source")
+    check = spec_md.field(body, "Label check").split(" ")[0].strip("`")
+    if not check or check.startswith("<"):
+        findings.append("**Label check**: the file holding the label rule's result (rows, mismatches)")
+    elif not (root / check).exists():
+        findings.append(f"{check} is missing - run the label rule's SQL against the source and save rows, mismatches")
+    else:
+        rows, mismatches = _label_check(root / check)
+        if rows <= 0:
+            findings.append(f"{check}: the label rule ran on no rows")
+        elif mismatches:
+            findings.append(f"label rule disagrees with the stored label on {mismatches} of {rows} rows - "
+                            "ask the user, never round it away")
+    return findings, warnings
 
 
 def freeze(root: Path, slug: str) -> str:
@@ -107,11 +153,24 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="route.py", description=__doc__)
     parser.add_argument("--root", default=".")
     sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("problem")
     for name in ("freeze", "junit", "deliver"):
         sub.add_parser(name).add_argument("slug")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     try:
+        if args.command == "problem":
+            findings, warnings = problem(root)
+            for line in warnings:
+                print(f"WARN {line}")
+            for line in findings:
+                print(f"FAIL {line}")
+            print(f"problem: {'fail' if findings else 'pass'}")
+            return GATE_FAIL if findings else OK
         if args.command == "freeze":
             print(f"frozen {args.slug} at {freeze(root, args.slug)[:12]}")
             return OK

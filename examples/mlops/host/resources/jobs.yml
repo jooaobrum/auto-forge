@@ -1,0 +1,18 @@
+resources:
+  jobs:
+    train:
+      name: churn-train
+      tasks:
+        - task_key: train
+          python_wheel_task:
+            package_name: churn
+            entry_point: train
+            parameters: ["--env", "${bundle.target}"]
+    score:
+      name: churn-score
+      tasks:
+        - task_key: score
+          python_wheel_task:
+            package_name: churn
+            entry_point: score
+            parameters: ["--env", "${bundle.target}"]

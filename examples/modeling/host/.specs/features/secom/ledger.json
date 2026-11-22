@@ -1,0 +1,123 @@
+{
+  "round": "secom",
+  "best": "dfdee50fa862a2c3",
+  "entries": [
+    {
+      "iteration": 0,
+      "id": "ba204903d67b1ae4",
+      "hypothesis": "baseline",
+      "recipe": "",
+      "metric": "pr_auc",
+      "time": "2026-11-10T22:36:23Z",
+      "checks": {
+        "CHK-LEAK-003": {
+          "ok": true,
+          "detail": "prepare() is causal on 696 train rows"
+        },
+        "CHK-LEAK-001": {
+          "ok": true,
+          "detail": "max univariate AUC s016=0.589 < 0.98"
+        },
+        "CHK-DUP-001": {
+          "ok": true,
+          "detail": "0 duplicated feature vectors across splits"
+        }
+      },
+      "previous_best": null,
+      "value": 0.10841967389062337,
+      "task": "binary",
+      "n_features": 19,
+      "threshold_f1_valid": 0.8018075747433618,
+      "error_summary": [
+        "FN-heavy (6 FN vs 2 FP at 0.802): missing signal for the positive class",
+        "over-confident top decile (score 0.75, rate 0.07)",
+        "by period: worst 2008-09-30/2008-10-06 (pr_auc 0.100) vs best 2008-09-23/2008-09-29 (0.188)"
+      ],
+      "status": "kept",
+      "reason": "first feasible iteration (baseline)",
+      "delta": null,
+      "mlflow_run_id": "00000000000000000000000000000000"
+    },
+    {
+      "iteration": 1,
+      "id": "f5f75963abd40496",
+      "hypothesis": "H1: nothing changes",
+      "recipe": "",
+      "metric": "pr_auc",
+      "time": "2026-11-10T22:36:23Z",
+      "checks": {
+        "CHK-LEAK-003": {
+          "ok": true,
+          "detail": "prepare() is causal on 696 train rows"
+        },
+        "CHK-LEAK-001": {
+          "ok": true,
+          "detail": "max univariate AUC s016=0.589 < 0.98"
+        },
+        "CHK-DUP-001": {
+          "ok": true,
+          "detail": "0 duplicated feature vectors across splits"
+        }
+      },
+      "previous_best": "ba204903d67b1ae4",
+      "value": 0.10841967389062337,
+      "task": "binary",
+      "n_features": 19,
+      "threshold_f1_valid": 0.8018075747433618,
+      "error_summary": [
+        "FN-heavy (6 FN vs 2 FP at 0.802): missing signal for the positive class",
+        "over-confident top decile (score 0.75, rate 0.07)",
+        "by period: worst 2008-09-30/2008-10-06 (pr_auc 0.100) vs best 2008-09-23/2008-09-29 (0.188)"
+      ],
+      "status": "rejected",
+      "reason": "gain +0.0000 below min gain 0.01",
+      "delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "reverted_to": "ba204903d67b1ae4",
+      "mlflow_run_id": "00000000000000000000000000000001"
+    },
+    {
+      "iteration": 2,
+      "id": "dfdee50fa862a2c3",
+      "hypothesis": "H2: brings s000 back",
+      "recipe": "",
+      "metric": "pr_auc",
+      "time": "2026-11-10T22:36:24Z",
+      "checks": {
+        "CHK-LEAK-003": {
+          "ok": true,
+          "detail": "prepare() is causal on 696 train rows"
+        },
+        "CHK-LEAK-001": {
+          "ok": true,
+          "detail": "max univariate AUC s000=0.946 < 0.98"
+        },
+        "CHK-DUP-001": {
+          "ok": true,
+          "detail": "0 duplicated feature vectors across splits"
+        }
+      },
+      "previous_best": "ba204903d67b1ae4",
+      "value": 0.5714180455559765,
+      "task": "binary",
+      "n_features": 20,
+      "threshold_f1_valid": 0.9872890162782587,
+      "error_summary": [
+        "FN-heavy (4 FN vs 0 FP at 0.987): missing signal for the positive class",
+        "over-confident top decile (score 0.93, rate 0.20)",
+        "by period: worst 2008-09-16/2008-09-22 (pr_auc 0.500) vs best 2008-09-23/2008-09-29 (0.694)"
+      ],
+      "status": "kept",
+      "reason": "gain +0.4630, CI [+0.1791, +0.6842]",
+      "delta": 0.4629983716653532,
+      "ci": [
+        0.17912873971771046,
+        0.6841645771323243
+      ],
+      "mlflow_run_id": "00000000000000000000000000000002"
+    }
+  ]
+}

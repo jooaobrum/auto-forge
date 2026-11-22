@@ -1,0 +1,39 @@
+{
+  "counts": {
+    "oot": 157,
+    "train": 696,
+    "valid": 147
+  },
+  "created": "2026-11-10T22:36:23Z",
+  "excluded": 0,
+  "group_col": null,
+  "id_col": "id",
+  "id_hash": {
+    "oot": "2f6a1a3bf302791a72371df684b88eab69da23d3c600b48501fca26ea8edb056",
+    "train": "86dd80c4499c3c0963584502abb1b15bdb9483d6fa8167ac638bf46e81044640",
+    "valid": "aa39e4bb6972f661bd5e413b918def1e575606abd331653a90c05a9487b9d042"
+  },
+  "label_col": "label",
+  "positives": {
+    "oot": 10,
+    "train": 43,
+    "valid": 7
+  },
+  "table": "workspace.curated.secom",
+  "time_col": "timestamp",
+  "version": 1,
+  "windows": {
+    "oot": [
+      "2008-10-03",
+      "2008-10-16"
+    ],
+    "train": [
+      "2008-07-19",
+      "2008-09-19"
+    ],
+    "valid": [
+      "2008-09-20",
+      "2008-10-02"
+    ]
+  }
+}

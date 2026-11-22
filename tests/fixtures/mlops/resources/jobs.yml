@@ -1,0 +1,10 @@
+resources:
+  jobs:
+    train:
+      name: poc_secom-train
+      tasks:
+        - task_key: train
+          python_wheel_task:
+            package_name: poc_secom
+            entry_point: train
+            parameters: ["--env", "${bundle.target}"]

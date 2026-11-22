@@ -34,6 +34,8 @@ import json
 import os
 import re
 import sys
+
+import lean_config
 import unicodedata
 
 STORE_REL = os.path.join(".specs", "lessons.json")
@@ -405,6 +407,10 @@ def main(argv=None):
 
     args = p.parse_args(argv)
     root = os.path.abspath(args.root)
+    halt = lean_config.halted(root)
+    if halt:
+        print(halt)
+        return lean_config.HALT_EXIT
     return args.fn(root, args)
 
 

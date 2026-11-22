@@ -1,0 +1,23 @@
+project: churn
+platform: databricks
+environments:
+  dev:  {catalog: main, schema: churn_dev}
+  qa:   {catalog: main, schema: churn_qa}
+  prod: {catalog: main, schema: churn}
+inputs:
+  accounts: main.crm.accounts
+model:
+  name: churn_30d
+  task: binary
+  threshold: 0.5
+pipelines: [train, score]
+mlflow:
+  experiment: /Shared/ds/churn
+  registry: databricks-uc
+  required_tags: [git_commit, config_env, round, experiment_id, training_tables]
+monitoring:
+  inference_table: inference
+  metrics: [accuracy, positive_rate, score_mean]
+  drift: {baseline: training, threshold: 0.2}
+  schedule: daily
+  alert: ds-alerts

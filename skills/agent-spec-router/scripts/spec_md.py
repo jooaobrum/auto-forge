@@ -1,15 +1,32 @@
 """Read the markdown a spec or LAB.md is written in: bold fields, sections, tables and lists.
 
-Shared by agent-spec-router, agent-spec-pipeline and agent-spec-experiment; every copy is identical.
+Shared by agent-spec-router, agent-spec-pipeline, agent-spec-experiment, agent-spec-modeling and agent-spec-mlops;
+every copy is identical.
 """
 
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 APPROVED = re.compile(r"^\*\*Approved\*\*:\s*(?!<)\S", re.MULTILINE)
 YES = {"yes", "y", "true", "x", "✓", "1"}
 COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+CONFIRMED = re.compile(r'^\d{4}-\d{2}-\d{2}\s+-\s+user:\s*"[^"]*\S[^"]*"$')
+METRICS = ("pr_auc", "roc_auc", "f1", "macro_f1", "accuracy", "log_loss", "brier", "rmse", "mae")
+LOWER_IS_BETTER = ("log_loss", "brier", "rmse", "mae")
+PROBLEM_FIELDS = ("Target", "Label rule", "Prediction time", "Cost of FP", "Cost of FN", "Metric")
+HALT_EXIT = 5
+
+
+def halted(root) -> str:
+    """The message when `<root>/.specs/HALT` exists: every lane script stops before doing anything; "" otherwise."""
+    path = Path(root) / ".specs" / "HALT"
+    if not path.exists():
+        return ""
+    reason = next((line.strip() for line in path.read_text(errors="replace").splitlines() if line.strip()), "")
+    return ("HALT .specs/HALT exists" + (f" ({reason})" if reason else "")
+            + " - nothing ran; remove the file to resume")
 
 
 def strip_comments(text: str) -> str:
@@ -74,3 +91,21 @@ def split_list(cell: str) -> list[str]:
 
 def is_yes(cell: str) -> bool:
     return cell.strip().lower() in YES
+
+
+def problem_findings(text: str, fields: tuple = PROBLEM_FIELDS) -> list[str]:
+    """What the `## Problem` section of a LAB.md lacks: each field filled, a known metric, the user's confirmation."""
+    body = section(text, "Problem")
+    if not body:
+        return ["no ## Problem section"]
+    findings = []
+    for name in fields:
+        value = field(body, name)
+        if not value or value.startswith("<"):
+            findings.append(f"**{name}**: missing or not filled")
+    metric = field(body, "Metric").lower()
+    if "Metric" in fields and metric and not metric.startswith("<") and metric not in METRICS:
+        findings.append(f"**Metric**: {metric} is not one of {', '.join(METRICS)}")
+    if not CONFIRMED.match(field(body, "Confirmed")):
+        findings.append('**Confirmed**: <date> - user: "<their words>" - only the user confirms the Problem')
+    return findings

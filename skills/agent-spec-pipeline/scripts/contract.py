@@ -3,7 +3,8 @@
 Usage: python3 contract.py [--root <repo>] compile <slug> [--dialect spark|sqlite]
        python3 contract.py [--root <repo>] gate <slug>
 The query returns one row (case, violations) per rule; run it on the pipeline's output and save it as
-`.specs/features/<slug>/runs/main/contract.csv`. Exit: 0 ok, 1 gate fail, 2 invalid input.
+`.specs/features/<slug>/runs/main/contract.csv`. Exit: 0 ok, 1 gate fail, 2 invalid input,
+5 halted (.specs/HALT exists).
 """
 
 from __future__ import annotations
@@ -270,6 +271,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--dialect", default="spark", choices=DIALECTS)
     sub.add_parser("gate").add_argument("slug")
     args = parser.parse_args(argv)
+    halt = spec_md.halted(args.root)
+    if halt:
+        print(halt)
+        return spec_md.HALT_EXIT
     root = Path(args.root).resolve()
     try:
         if args.command == "compile":
