@@ -40,8 +40,8 @@ These hold even if no reference file is read. Each one lives here; the reference
 4. Checks are fixed once `validate_checks.py` passes; a check may be appended when the walk or the
    Verifier finds a missing obligation. In the plan, `Landing`, `Surface` and the stored shape are
    additive; the path and `Changes underneath` are kept true in the commit that changes them.
-5. The Verifier is a fresh sub-agent, never the author, and it always runs, once per feature,
-   beside the screens sub-agent. `check_proofs.py` settles the mechanical part - every proof run
+5. The Verifier is a fresh sub-agent (the **verifier** agent, `agents/verifier.md` of this plugin),
+   never the author, and it always runs, once per feature, beside the screens sub-agent. `check_proofs.py` settles the mechanical part - every proof run
    and passing at `HEAD`, the pictures, the walk, the mutations killed - and the Verifier spends
    its time on judgement: mutations where a wrong rule would stay green, examples nobody named,
    assertions looser than their criterion. The work is done when every finding is closed by a
@@ -161,7 +161,7 @@ mutant to be killed; the fixtures are also a worked example of a passing artifac
 | --- | --- | --- |
 | Python 3.8+ (standard library only) | every script | the gates do not run; the phases still apply |
 | git | `mutate.py` and `check_proofs.py` (HEAD, clean tree) | no mutations and no HEAD check: say so in the report |
-| sub-agents | the Verifier and the screens sub-agent | run their file in a new session and write `self-verified`; the gate warns |
+| sub-agents | the Verifier and the screens sub-agent | run their file (the Verifier: the `verify-model` skill) in a new session and write `self-verified`; the gate warns |
 | a model that reads images | the screens sub-agent | hand the pictures and the captures to the user |
 | a browser the agent can drive | saving `<capture>.running.png` and the walk | hand the steps to the user |
 
