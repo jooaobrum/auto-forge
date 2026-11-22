@@ -1,6 +1,6 @@
 ---
 name: verify-model
-description: The verifier agent as a skill, for platforms with no subagents (Databricks Genie Code). Use when a modeling round or a lean feature reaches Verify and no subagent can be dispatched; run it in a new chat, never the one that built the work, and declare the fallback in verification.md. Where subagents exist, dispatch agents/verifier.md instead.
+description: The verifier agent as a skill, for platforms with no subagents (Databricks Genie Code). Use when a modeling round, an experiment's variant or a lean feature reaches Verify and no subagent can be dispatched; run it in a new chat, never the one that built the work, and declare the fallback in verification.md. Where subagents exist, dispatch agents/verifier.md instead.
 ---
 
 # Verifier
@@ -47,6 +47,23 @@ Follow agent-spec-lean `references/verify.md`. Read `plan.md`, `checks.md` (its 
 named and assertions looser than their criterion. Write `verification.md` and `mutations.json` as it says;
 the screens sub-agent is not you.
 
+## agent-spec-experiment: the variant that passed the gate
+
+Follow agent-spec-experiment `references/verify.md`. Read `plan.md` (not `## Handoff`), `results.md`,
+`gate.json`, the Results files of the variant and of the Baseline, the traces they point at, and the diff from
+the commit in `frozen.json`.
+
+1. `gate.json` is the `--confirm` run of the variant, exit 0, and no later commit changes the Edit Scope.
+2. The diff makes the one change the variant's hypothesis names, on its Surface item, and nothing else.
+3. Three passing Target traces and every Case whose verdict changed, read against each `## Behavior` line: a
+   pass that games the rubric is a finding.
+4. Two questions of your own, in no Case, for two Behavior lines, run at HEAD with the LAB.md eval command and
+   judged on the same rubric: a behavior that holds only on the Cases is a finding.
+5. Every Behavior line has a passing Case.
+6. Write `verification.md` with `**Verdict**`, `**Variant**`, `**HEAD**` and `**Verifier**: subagent` (or
+   `fresh-context` plus `**Fallback**: <platform> - <why>` in a new chat). `experiment.py deliver` refuses
+   `adopt` or `promote` without it.
+
 ## agent-spec-mlops
 
 No Verifier: `validate_prod.py` (D1-D10) is its gate, and a person reviews the model card and the
@@ -54,5 +71,5 @@ promotion. Do not invent a review.
 
 ## Return
 
-The gate's last line first (`validate_verification <slug>: pass`, or the lean gate's). Then the verdict,
+The gate's last line first (`validate_verification <slug>: pass`, the experiment gate's, or the lean gate's). Then the verdict,
 the HEAD you judged, one line per finding (`F<n>: <text>`) and what you could not check. Nothing else.

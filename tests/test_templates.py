@@ -70,3 +70,12 @@ def test_research_hypothesis_needs_idea_and_why(host):
     host.commit("h")
     code, out = host.exp("freeze", "h")
     assert code == 2 and "H1 - cite-ids" in out and "- Why:" in out
+
+
+def test_experiment_has_a_reference_per_phase_like_lean():
+    skill = (SKILLS / "agent-spec-experiment" / "SKILL.md").read_text()
+    for phase, ref in (("Plan", "plan.md"), ("Run", "run.md"), ("Verify", "verify.md")):
+        assert (SKILLS / "agent-spec-experiment" / "references" / ref).exists(), ref
+        assert f"| {phase} |" in skill and f"(references/{ref})" in skill, phase
+    assert (SKILLS / "agent-spec-experiment" / "references" / "memory.md").exists()
+    assert "## Rules" in skill and "Author is not verifier" in skill

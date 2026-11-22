@@ -62,13 +62,15 @@ lives in ordinary skills. Each lane loads the ones LAB.md lists at three points:
 ## Research lane
 
 agent-spec-experiment, for one Failure Mode at a time (a new model, or a new round of its backlog, goes to
-agent-spec-modeling instead; see [Data science end to end](#data-science-end-to-end)):
+agent-spec-modeling instead; see [Data science end to end](#data-science-end-to-end)). It has agent-spec-lean's
+shape - plan, run, verify, deliver - with a reference per phase (`references/plan.md`, `run.md`, `verify.md`,
+`memory.md`):
 
 1. **Diagnose** from the failing traces; if the cause is in code, it goes to the build lane.
 2. **Plan**: the Problem, the Behavior in EARS, the Diagnosis, the Shape of the path the Cases take and one
    hypothesis per variant with what it should move and risk. Its spec part: for an agent, a table of Cases -
-   question and rubric always, the record ids to read or cite when it is about retrieval, route, failure mode or tier only when that is evaluated; for a model, holdout
-   slices. One metric gets a Target delta; the rest are pass bars or guardrails (input tokens +15%, latency
+   question and rubric always, the record ids to read or cite when it is about retrieval, route, failure
+   mode or tier only when that is evaluated; for a model, holdout slices. One metric gets a Target delta; the rest are pass bars or guardrails (input tokens +15%, latency
    +20% by default).
 3. **Baseline** every Case once, then up to 3 **variants**. Each variant runs only what it can affect: Target
    Cases 3 times, Cases whose baseline touched the edited files once, the rest once in the final confirm run.
@@ -76,7 +78,11 @@ agent-spec-modeling instead; see [Data science end to end](#data-science-end-to-
    Target must rise by its delta; edits outside the Edit Scope fail it. **Regression** Cases must pass every
    run; **capability** Cases pass on a majority. A capability Case that passes 3 adopted Experiments in a
    row is proposed for regression.
-5. **Deliver** with a decision: adopt, reject, or promote.
+5. **Verify**: a fresh Verifier (the `verifier` agent) checks the variant made the one change its hypothesis
+   names, reads the passing traces against the Behavior lines for a rubric that was gamed, and tries two
+   questions no Case names. It writes `verification.md`.
+6. **Deliver** with a decision: adopt, reject, or promote. Adopt and promote need a passing gate and a
+   `verification.md` with `**Verdict**: PASS` for that variant.
 
 ## Data science end to end
 

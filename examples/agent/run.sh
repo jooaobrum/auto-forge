@@ -24,4 +24,18 @@ exp gate cite-history --variant cite-ids
 exp gate cite-history --variant cite-ids --confirm
 exp budget cite-history
 git commit -qam "prompt(history): cite the id of every record used"
+expect_fail exp deliver cite-history --decision adopt   # no Verifier yet: refused
+# The verifier agent (agents/verifier.md), dispatched on the variant, writes:
+cat > $W/verification.md <<EOF
+# cite-history verification
+
+**Verdict**: PASS
+**Variant**: cite-ids
+**HEAD**: $(git rev-parse --short HEAD)
+**Verifier**: subagent
+
+## Findings
+
+None - the diff is H2's one prompt change; q01 cites only the records its answer uses; q02, q03 unchanged
+EOF
 exp deliver cite-history --decision adopt

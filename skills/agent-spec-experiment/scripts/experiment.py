@@ -333,6 +333,36 @@ def update_streaks(work: Work, spec: lab.Spec, profile: str, verdicts: dict) -> 
     return sorted(graduates)
 
 
+VERIFIERS = ("subagent", "fresh-context")
+
+
+def verification(work: Work, variant: str) -> tuple[list[str], list[str]]:
+    """What stops an adopt or a promote in verification.md (references/verify.md), and what only warns."""
+    path = work.path("verification.md")
+    if not path.exists():
+        return [f"no verification.md - dispatch the verifier agent on {variant} (references/verify.md)"], []
+    text = path.read_text()
+    errors, warnings = [], []
+    if spec_md.field(text, "Verdict").upper() != "PASS":
+        errors.append("verification.md: **Verdict**: is not PASS - close the findings, or --decision reject")
+    if spec_md.field(text, "Variant") != variant:
+        errors.append(f"verification.md judged **Variant**: {spec_md.field(text, 'Variant') or '(none)'}, "
+                      f"the last gate ran {variant}")
+    verifier = spec_md.field(text, "Verifier").lower()
+    if verifier not in VERIFIERS:
+        errors.append(f"verification.md: **Verifier**: {verifier or '(none)'} - subagent or fresh-context, never "
+                      "the author")
+    elif verifier == "fresh-context":
+        if spec_md.field(text, "Fallback"):
+            warnings.append(f"verified in a fresh context, not a subagent: {spec_md.field(text, 'Fallback')}")
+        else:
+            errors.append("verification.md: fresh-context needs **Fallback**: <platform> - <why no subagent>")
+    for row in spec_md.table(spec_md.section(text, "Findings")):
+        if row.get("Finding") and not row.get("Closed"):
+            errors.append(f"finding not closed: {row['Finding']}")
+    return errors, warnings
+
+
 def deliver(work: Work, decision: str | None) -> str:
     frozen = work.frozen()
     if decision not in DECISIONS:
@@ -342,6 +372,11 @@ def deliver(work: Work, decision: str | None) -> str:
     last = work.read_json("gate.json")
     if last["exit"] != 0 and decision != "reject":
         raise LabError("the last gate failed - fix it, or end with --decision reject: " + "; ".join(last["findings"]))
+    warnings: list[str] = []
+    if decision != "reject":
+        errors, warnings = verification(work, last.get("variant", ""))
+        if errors:
+            raise LabError("; ".join(errors))
     spec = lab.load_spec(work)
     graduates = update_streaks(work, spec, frozen["profile"], last.get("verdicts", {})) if decision == "adopt" else []
     commits = lab.git(work.root, "log", "--oneline", f"{frozen['commit']}..HEAD").strip() or "none"
@@ -352,6 +387,11 @@ def deliver(work: Work, decision: str | None) -> str:
         lines += ["## Proposed for regression", "",
                   f"Passed {GRADUATE_AFTER} adopted Experiments in a row - mark them `regression` in the Cases:", ""]
         lines += [f"- {case}" for case in graduates] + [""]
+    if warnings:
+        lines += ["## Warnings", ""] + [f"- {w}" for w in warnings] + [""]
+    if work.path("verification.md").exists() and decision != "reject":
+        verdict = spec_md.field(work.path("verification.md").read_text(), "Verdict")
+        lines += ["## Verification", "", f"`verification.md`: **Verdict**: {verdict}", ""]
     lines += ["## Gate", "", f"`{last['command']}` exited {last['exit']}", "", results,
               "## Commits since freeze", "", "```", commits, "```", ""]
     work.path("delivery.md").write_text("\n".join(lines))

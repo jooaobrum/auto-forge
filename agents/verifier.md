@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: Independent Verifier for auto-forge lanes. Use when a lane reaches its Verify step - an agent-spec-modeling round (the Verification on out-of-time data, V0-V7) or an agent-spec-lean feature (rule 5) - to judge work it did not write, write the lane's verification.md and return the verdict and the findings. Never the author of the work.
+description: Independent Verifier for auto-forge lanes. Use when a lane reaches its Verify step - an agent-spec-modeling round (the Verification on out-of-time data, V0-V7), an agent-spec-experiment variant that passed its gate, or an agent-spec-lean feature (rule 5) - to judge work it did not write, write the lane's verification.md and return the verdict and the findings. Never the author of the work.
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
@@ -48,6 +48,23 @@ Follow agent-spec-lean `references/verify.md`. Read `plan.md`, `checks.md` (its 
 named and assertions looser than their criterion. Write `verification.md` and `mutations.json` as it says;
 the screens sub-agent is not you.
 
+## agent-spec-experiment: the variant that passed the gate
+
+Follow agent-spec-experiment `references/verify.md`. Read `plan.md` (not `## Handoff`), `results.md`,
+`gate.json`, the Results files of the variant and of the Baseline, the traces they point at, and the diff from
+the commit in `frozen.json`.
+
+1. `gate.json` is the `--confirm` run of the variant, exit 0, and no later commit changes the Edit Scope.
+2. The diff makes the one change the variant's hypothesis names, on its Surface item, and nothing else.
+3. Three passing Target traces and every Case whose verdict changed, read against each `## Behavior` line: a
+   pass that games the rubric is a finding.
+4. Two questions of your own, in no Case, for two Behavior lines, run at HEAD with the LAB.md eval command and
+   judged on the same rubric: a behavior that holds only on the Cases is a finding.
+5. Every Behavior line has a passing Case.
+6. Write `verification.md` with `**Verdict**`, `**Variant**`, `**HEAD**` and `**Verifier**: subagent` (or
+   `fresh-context` plus `**Fallback**: <platform> - <why>` in a new chat). `experiment.py deliver` refuses
+   `adopt` or `promote` without it.
+
 ## agent-spec-mlops
 
 No Verifier: `validate_prod.py` (D1-D10) is its gate, and a person reviews the model card and the
@@ -55,5 +72,5 @@ promotion. Do not invent a review.
 
 ## Return
 
-The gate's last line first (`validate_verification <slug>: pass`, or the lean gate's). Then the verdict,
+The gate's last line first (`validate_verification <slug>: pass`, the experiment gate's, or the lean gate's). Then the verdict,
 the HEAD you judged, one line per finding (`F<n>: <text>`) and what you could not check. Nothing else.

@@ -1,6 +1,6 @@
 import json
 
-from conftest import frozen, run
+from conftest import frozen, run, verified
 
 
 def passed_variant(host, slug="exp"):
@@ -21,6 +21,7 @@ def streaks(host):
 
 def test_graduation_streak(host):
     passed_variant(host, "e1")
+    verified(host, "e1")
     code, out = host.exp("deliver", "e1", "--decision", "adopt")
     assert code == 0, out
     assert streaks(host) == {"q01": 1, "q07": 1}
@@ -34,6 +35,7 @@ def test_graduation_streak(host):
         host.runs(slug, "v1", "q01", [run("q01", k, recall=1.0) for k in (1, 2, 3)])
         host.runs(slug, "v1", "q07", [run("q07")])
         host.exp("gate", slug, "--variant", "v1")
+        verified(host, slug)
         code, out = host.exp("deliver", slug, "--decision", "adopt")
         assert code == 0, out
     assert streaks(host) == {"q01": 3, "q07": 3}
@@ -56,6 +58,7 @@ def test_regression_cases_do_not_count_toward_graduation(host):
     host.runs("exp", "v1", "q01", [run("q01", n) for n in (1, 2, 3)])
     host.runs("exp", "v1", "q07", [run("q07")])
     host.exp("gate", "exp", "--variant", "v1")
+    verified(host)
     host.exp("deliver", "exp", "--decision", "adopt")
     assert streaks(host) == {"q01": 1}
 
@@ -76,9 +79,30 @@ def test_deliver_rules_and_promote(host):
     host.runs("exp", "v1", "q01", [run("q01", n, recall=1.0) for n in (1, 2, 3)])
     host.exp("gate", "exp", "--variant", "v1")
     code, out = host.exp("deliver", "exp", "--decision", "promote")
+    assert code == 2 and "no verification.md" in out
+    verified(host)
+    code, out = host.exp("deliver", "exp", "--decision", "promote")
     assert code == 0, out
     text = (host.root / ".specs/features/exp-build/plan.md").read_text()
     assert "**Lane**: build" in text
     assert "**Failure mode**: reads history, does not cite it" in text
     assert "- q01" in text
     assert "experiment.py gate exp --regression-only" in text
+
+
+def test_adopt_needs_an_independent_passing_verification(host):
+    passed_variant(host)
+    for kwargs, message in (({"verdict": "FAIL"}, "is not PASS"),
+                            ({"variant": "v0"}, "the last gate ran v1"),
+                            ({"verifier": "self-verified"}, "never the author"),
+                            ({"verifier": "fresh-context"}, "needs **Fallback**"),
+                            ({"findings": "| Finding | Evidence | Fix | Closed |\n| --- | --- | --- | --- |\n"
+                                          "| games the rubric | t-88 | cite only used | |"}, "finding not closed")):
+        verified(host, **kwargs)
+        code, out = host.exp("deliver", "exp", "--decision", "adopt")
+        assert code == 2 and message in out, (kwargs, out)
+    verified(host, verifier="fresh-context\n**Fallback**: genie - no subagents")
+    code, out = host.exp("deliver", "exp", "--decision", "adopt")
+    assert code == 0, out
+    text = (host.root / ".specs/features/exp/delivery.md").read_text()
+    assert "## Warnings" in text and "genie - no subagents" in text and "**Verdict**: PASS" in text

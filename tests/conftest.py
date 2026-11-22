@@ -171,3 +171,11 @@ def frozen(host: Host, baseline_runs: list[dict], slug: str = "exp", **spec_kwar
     assert code == 0, out
     code, out = host.exp("baseline", slug, "--from", f".specs/features/{slug}/base.json")
     assert code == 0, out
+
+
+def verified(host: Host, slug: str = "exp", variant: str = "v1", verifier: str = "subagent", verdict: str = "PASS",
+             findings: str = "None - the one change, the traces and two unnamed questions probed") -> None:
+    """The Verifier's report on the variant (agent-spec-experiment references/verify.md)."""
+    host.write(f".specs/features/{slug}/verification.md",
+               f"# {slug} verification\n\n**Verdict**: {verdict}\n**Variant**: {variant}\n**HEAD**: abc1234\n"
+               f"**Verifier**: {verifier}\n\n## Findings\n\n{findings}\n")
