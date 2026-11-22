@@ -16,7 +16,7 @@ def test_skill_frontmatter_and_shared_parser():
     names = {p.name for p in SKILL_DIRS}
     assert names == {"agent-spec-router", "agent-spec-grilling", "agent-spec-writer", "agent-spec-lean",
                      "agent-spec-pipeline", "agent-spec-experiment", "agent-spec-modeling", "agent-spec-mlops",
-                     "data-databricks-sql", "ml-mlflow-log"}
+                     "data-databricks-sql", "ml-mlflow-log", "verify-model", "run-modeling-iteration"}
     for folder in SKILL_DIRS:
         meta = frontmatter(folder / "SKILL.md")
         assert meta["name"] == folder.name

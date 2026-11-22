@@ -43,6 +43,11 @@ of challenger over champion). See [Data science end to end](docs/workflow.md#dat
 | `agent-spec-modeling` | research lane for a new model: split lock, EDA, baseline, one change per iteration, Verification on OOT |
 | `agent-spec-mlops` | build lane to production: config per environment, tested pipelines, trace, model card, promotion |
 | `data-databricks-sql`, `ml-mlflow-log` | example domain skills your team replaces with its own know-how |
+| `verify-model`, `run-modeling-iteration` | the two agents below as skills, for platforms with no subagents (Databricks) |
+
+Two subagents in `agents/` run where a clean context pays off: `verifier` (any lane's Verify step, never the
+author) and `modeling-iteration-runner` (one change of a modeling round, never the OOT). Claude Code loads
+them from the plugin; elsewhere see [docs/workflow.md](docs/workflow.md#subagents).
 
 Everything is markdown plus standard-library Python scripts, so it runs wherever an agent has a shell:
 Claude Code, GitHub Copilot in VS Code, the Copilot CLI, Databricks, or any agent that reads `AGENTS.md`.
@@ -68,7 +73,8 @@ it there too.
 
 **Databricks** - Workspace > Create > Git folder > `https://github.com/jooaobrum/auto-forge`. Paste
 [skills/AGENTS-snippet.md](skills/AGENTS-snippet.md) into the assistant's instructions, with the Git folder's
-path in front of `skills/`.
+path in front of `skills/`. To call a skill with `@` (the subagent fallbacks `verify-model` and
+`run-modeling-iteration` among them), register the Git folder's `skills/` under Customizations > Skills.
 
 **Any other agent** - clone the repository and paste `skills/AGENTS-snippet.md` into your project's
 `AGENTS.md`.

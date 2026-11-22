@@ -51,6 +51,14 @@ _Avoid_: feature, ticket, task
 One unit of work in the research lane, ending in a Decision.
 _Avoid_: tuning, iteration, attempt, run
 
+**Subagent**:
+A fresh context the main session dispatches for one step, which returns a short result: the verifier and the modeling iteration runner in `agents/`. A lane is never a subagent: it stops for the user's gates, and its files are the contract between steps.
+_Avoid_: worker, lane agent
+
+**Fallback**:
+On a platform with no subagents, a step run in a new chat instead, declared in its file: `**Verifier**: fresh-context` with `**Fallback**: <platform> - <why>`. The gate accepts it with a warning.
+_Avoid_: self-verified
+
 ## Experiment
 
 **Diagnosis**:

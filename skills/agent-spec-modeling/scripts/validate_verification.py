@@ -4,7 +4,8 @@ Usage: python3 <skill-dir>/scripts/validate_verification.py [--root <repo>] <slu
 
 Reads .specs/features/<slug>/verification.md, written by the Verifier:
   V0  the round validates (validate_round)
-  V1  a named Verifier (fresh-context or subagent; self-verified only warns) at a commit sha
+  V1  an independent Verifier at a commit sha: `subagent`, or `fresh-context` with a declared
+      **Fallback** (a platform with no subagents: a new chat, which warns); self-verified fails
   V2  it judges the ledger's best experiment
   V3  the OOT metric per period
   V4  the valid-to-OOT drop is stated right and within the plan's Max drop
@@ -29,7 +30,7 @@ import round_md
 import spec_md
 import validate_round
 
-VERIFIERS = {"fresh-context", "subagent", "self-verified"}
+VERIFIERS = {"subagent", "fresh-context"}
 MUTATIONS = ("CHK-MUT-001", "CHK-MUT-002")
 SHA = re.compile(r"[0-9a-f]{7,40}")
 
@@ -49,10 +50,17 @@ def validate(root: Path, slug: str, offline: bool = False) -> tuple[round_md.Rep
         return rep, summary
     doc = round_md.parse(text)
     verifier = doc.h("verifier").strip("` ").lower()
-    if verifier not in VERIFIERS:
+    fallback = doc.h("fallback").strip()
+    if verifier == "self-verified":
+        rep.fail("V1", "self-verified: the author cannot judge the OOT; dispatch the verifier agent "
+                       "(agents/verifier.md), or with no subagents run it in a new chat and write "
+                       "fresh-context with **Fallback**")
+    elif verifier not in VERIFIERS:
         rep.fail("V1", f"**Verifier** must be one of {sorted(VERIFIERS)}")
-    elif verifier == "self-verified":
-        rep.warn("V1", "self-verified: not a fresh context; say so in the delivery")
+    elif verifier == "fresh-context" and len(fallback) < 8:
+        rep.fail("V1", "fresh-context needs **Fallback**: <platform> - <why no subagent>")
+    elif verifier == "fresh-context":
+        rep.warn("V1", f"fallback, not a subagent ({fallback}); say so in the delivery")
     head = doc.h("head").strip("` ")
     if not SHA.fullmatch(head):
         rep.fail("V1", "**HEAD**: <commit sha> the Verifier judged")
@@ -100,7 +108,8 @@ def validate(root: Path, slug: str, offline: bool = False) -> tuple[round_md.Rep
     verdict = doc.section("Verdict")
     if not verdict or verdict.text.split()[:1] != ["PASS"]:
         rep.fail("V7", "## Verdict must read PASS")
-    summary.update(verifier=verifier, head=head, experiment=experiment, periods=rows)
+    summary.update(verifier=verifier, fallback=fallback if verifier == "fresh-context" else "",
+                   head=head, experiment=experiment, periods=rows)
     return rep, summary
 
 
@@ -117,6 +126,8 @@ def write_gate(root: Path, slug: str, rep: round_md.Report, summary: dict, offli
                   (f"| {summary.get('experiment')} | {summary.get('verifier')} | {summary.get('head')} | "
                    f"{summary.get('metric')} | {summary['valid']:g} | {summary['oot']:g} | {summary['drop']:g} | "
                    f"{summary['limit'] if summary.get('limit') is not None else '-'} |"), ""]
+    if summary.get("fallback"):
+        lines += [f"Verifier fallback: {summary['fallback']}", ""]
     if summary.get("periods"):
         lines += ["| OOT period | " + summary.get("metric", "metric") + " |", "| --- | --- |"]
         lines += [f"| {row[0]} | {row[-1]} |" for row in summary["periods"]] + [""]

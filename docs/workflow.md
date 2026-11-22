@@ -110,7 +110,7 @@ standard-library scripts. The rules come from the gates of ds-factory's `exp-hil
 | 2 Modeling | `validate_plan` P0-P10 | script | the plan is complete and the split is locked (below) |
 | 2 Modeling | approve the plan | human | `**Approved**:` in your words (rule A1) |
 | 2 Modeling | `validate_round` R0-R11 | script | the round followed the pattern (below) |
-| 2 Modeling | `validate_verification` V0-V7 | script | a fresh context judged the best experiment on OOT: PASS |
+| 2 Modeling | `validate_verification` V0-V7 | script | an independent Verifier (a subagent, or a declared fallback) judged the best experiment on OOT: PASS |
 | 3 MLOps | `validate_prod` D1-D10 | script | the production standard (below) |
 | 4 Promotion | `promote.py gate` | script | per slice: no slice regresses, target gain with a CI above zero |
 | 4 Promotion | OK the alias swap | human | challenger becomes champion, your words recorded by `promote.py approve` |
@@ -145,8 +145,8 @@ later iteration changes one thing.
   run per iteration (unless `--offline`). R8 the report's sections are filled. R9 the required leakage checks
   are reported. R10 the status agrees with the checks: a failed check means infeasible. R11 the code
   (`src/`, `notebooks/`, the round's `experiments/`) never references the OOT period.
-- **Verification.** V0 the round validates. V1 a named Verifier (fresh context or subagent; self-verified
-  only warns) at a commit sha. V2 it judges the ledger's best. V3 the OOT metric per period. V4 the
+- **Verification.** V0 the round validates. V1 an independent Verifier at a commit sha: `subagent`, or
+  `fresh-context` with a `**Fallback**` line (warns); `self-verified` fails. V2 it judges the ledger's best. V3 the OOT metric per period. V4 the
   valid-to-OOT drop is stated right and within P9. V5 both mutations killed, or n/a with a reason. V6 every
   finding closed by a commit. V7 the verdict is PASS. It writes `gate.json`; `deliver.py --decision promote`
   needs it passing.
@@ -181,6 +181,30 @@ and a 95% CI above zero. Then you OK the alias swap: `promote.py approve` record
 Out of scope for now: proving drift alerts fire (D6 only checks monitoring is declared), retraining, online
 serving, and a table-knowledge layer (verified or provisional table docs, a catalog MCP).
 
+## Subagents
+
+A lane is not a subagent: it stops for your gates (confirm the Problem, approve the plan, OK a promotion), so
+the main session owns it, and the files under `.specs/` are the contract between its steps. A subagent is used
+only where a clean context pays off, and `agents/` holds two:
+
+| Agent | Dispatched by | Reads | Writes | Returns |
+| --- | --- | --- | --- | --- |
+| `verifier` | modeling and lean, at Verify | what the lane's `verify.md` names: plan, ledger or proofs, the code at `HEAD` | the lane's `verification.md` (modeling: its code in `verify/`) | the gate's last line, the verdict, the findings |
+| `modeling-iteration-runner` | modeling, once per iteration | the approved plan, the ledger, the best's code, one hypothesis | `experiments/<id>.*`, `error_analysis/<id>.*`, one ledger entry | that ledger row |
+
+The mlops lane has no Verifier: `validate_prod` is its gate and you review the model card and the promotion.
+
+| Platform | Subagents | How |
+| --- | --- | --- |
+| Claude Code | yes | the plugin's `agents/` folder, loaded by default (`auto-forge:verifier`) |
+| GitHub Copilot (VS Code, CLI, cloud agent) | yes, as custom agents | the same files, frontmatter `name`, `description`, `tools` only; the plugin ships them in `com.github.copilot/agents/` (Agent Plugins 1.0), a test keeps them identical to `agents/` |
+| Databricks Genie Code | no | the `verify-model` and `run-modeling-iteration` skills: the same text, run in a new chat with `@` |
+
+The fallback on a platform with no subagents is a new chat, declared in the file: a modeling Verifier writes
+`**Verifier**: fresh-context` and `**Fallback**: <platform> - <why no subagent>`, and V1 passes with a warning.
+The author verifying its own round (`self-verified`) fails V1. The lean lane keeps its own rule: a new session
+writes `self-verified (degraded - no sub-agent)` and its gate warns.
+
 ## Where it lives
 
 Every piece of work has a folder, `.specs/features/<slug>/`: the spec, the runs, the results table, the
@@ -190,4 +214,5 @@ was done, what was tried, what the evidence said and what was decided.
 ## Installed anywhere
 
 The repository is a plugin for Claude Code, VS Code and the Copilot CLI, and a Git folder for Databricks.
+The two subagents and their fallback are under [Subagents](#subagents).
 The scripts are standard-library Python, so they run wherever the agent has a shell. See the README.

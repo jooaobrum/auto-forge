@@ -24,7 +24,8 @@ one who reads the holdout, once.
    - **mutations** ([patterns/leakage-checks.md](patterns/leakage-checks.md)): shuffled target (median
      of 10 repetitions at chance level) and future column (the univariate check fails);
    - optional: adversarial validation train vs OOT as a drift alert.
-5. Write `verification.md` with `**Verifier**: fresh-context|subagent|self-verified`, `**HEAD**: <sha>`,
+5. Write `verification.md` with `**Verifier**: subagent` (or `fresh-context` and `**Fallback**`, below),
+   `**HEAD**: <sha>`,
    ``**Experiment**: `<best id>` `` and the sections:
    - `## OOT by period` (a table, the metric in the last column);
    - `## Valid vs OOT` (`- Valid:`, `- OOT:`, `- Drop:`);
@@ -35,5 +36,8 @@ one who reads the holdout, once.
 6. `validate_verification.py <slug>` (V0-V7; `--offline` as above). The final report opens with its last
    line.
 
-No subagent: run in a fresh chat with only this file and write `**Verifier**: self-verified`; the gate
-warns. A drop above the limit is not solved here: it is a finding, and the next round starts from it.
+The author never verifies: `**Verifier**: self-verified` fails V1. On a platform with no subagents
+(Databricks Genie Code), start a new chat with only the `verify-model` skill and this file, write
+`**Verifier**: fresh-context` and `**Fallback**: <platform> - <why no subagent>`; the gate warns and the
+delivery says so. A drop above the limit is not solved here: it is a finding, and the next round starts
+from it.

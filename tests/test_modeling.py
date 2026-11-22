@@ -142,7 +142,10 @@ MUTANTS = [
     ("experiment snapshot reads the holdout", write(f"{R}/experiments/zz.py", "x = load('out_of_time')\n"),
      "round", "R11"),
     ("no verification", lambda root: (root / V).unlink(), "verify", "V1"),
-    ("bad verifier", text(V, "**Verifier**: fresh-context", "**Verifier**: me"), "verify", "V1"),
+    ("bad verifier", text(V, "**Verifier**: subagent", "**Verifier**: me"), "verify", "V1"),
+    ("the author verified", text(V, "**Verifier**: subagent", "**Verifier**: self-verified"), "verify", "V1"),
+    ("new chat without a declared fallback", text(V, "**Verifier**: subagent", "**Verifier**: fresh-context"),
+     "verify", "V1"),
     ("no head", text(V, "**HEAD**: 7441053", "**HEAD**: latest"), "verify", "V1"),
     ("judged another experiment", text(V, "**Experiment**: `", "**Experiment**: `0000"), "verify", "V2"),
     ("no OOT by period", text(V, "| 2008-10-03/2008-10-09 | 78 | 4 | 0.512 |\n| 2008-10-10/2008-10-16 | 79 | 6 | "
@@ -186,10 +189,25 @@ def test_regression_metric_drop_is_reversed(root):
     assert validate_verification.validate(root, SLUG)[0].ok
 
 
-def test_self_verified_only_warns(root):
-    edit(root, V, "**Verifier**: fresh-context", "**Verifier**: self-verified")
+def test_subagent_passes_without_a_warning(root):
     rep = validate_verification.validate(root, SLUG)[0]
-    assert rep.ok and any("[V1]" in w for w in rep.warnings)
+    assert rep.ok and not any("[V1]" in w for w in rep.warnings)
+
+
+def test_declared_fallback_passes_and_warns(root):
+    edit(root, V, "**Verifier**: subagent", "**Verifier**: fresh-context\n"
+         "**Fallback**: Databricks Genie Code - no subagents; a new chat with only the verify-model skill")
+    rep = validate_verification.validate(root, SLUG)[0]
+    assert rep.ok, rep.errors
+    assert any("[V1]" in w and "Genie Code" in w for w in rep.warnings)
+    validate_verification.write_gate(root, SLUG, *validate_verification.validate(root, SLUG), offline=False)
+    assert "Verifier fallback: Databricks Genie Code" in (root / R / "results.md").read_text()
+
+
+def test_self_verified_fails_even_with_a_fallback(root):
+    edit(root, V, "**Verifier**: subagent", "**Verifier**: self-verified\n**Fallback**: Databricks Genie Code")
+    rep = validate_verification.validate(root, SLUG)[0]
+    assert not rep.ok and "V1" in rep.codes()
 
 
 def test_cli_exit_codes_and_gate_file(root, capsys):
@@ -200,7 +218,7 @@ def test_cli_exit_codes_and_gate_file(root, capsys):
     assert "validate_verification secom: pass" in out
     gate_json = json.loads((root / R / "gate.json").read_text())
     assert gate_json["exit"] == 0 and gate_json["experiment"] == "dfdee50fa862a2c3"
-    assert "| dfdee50fa862a2c3 | fresh-context | 7441053 | pr_auc | 0.571 | 0.48 | 0.091 | 0.3 |" in \
+    assert "| dfdee50fa862a2c3 | subagent | 7441053 | pr_auc | 0.571 | 0.48 | 0.091 | 0.3 |" in \
         (root / R / "results.md").read_text()
     edit(root, V, "## Verdict\nPASS", "## Verdict\nalmost")
     assert validate_verification.main(["--root", str(root), SLUG]) == 1

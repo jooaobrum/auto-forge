@@ -9,7 +9,7 @@ git rm -q notebooks/peek.py && git commit -qm "chore: drop the notebook that rea
 modeling validate_round secom
 expect_fail modeling validate_verification secom
 cp verify/verification.md $W/verification.md
-git add -A && git commit -qm "verify(secom): fresh-context verification on OOT"
+git add -A && git commit -qm "verify(secom): verifier subagent on OOT"
 modeling validate_verification secom
 modeling deliver secom --decision promote
 test -f .specs/features/secom-mlops/spec.md
