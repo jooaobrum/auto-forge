@@ -18,6 +18,45 @@ names the rule it fails (`FAIL [R6] ...`). Exit codes: `0` pass, `1` fail, `2` i
    -> report.md -> Verification on OOT (fresh context) -> delivery: promote or reject
 ```
 
+```
+┌──────┐   ┌───────┐   ┌────────┐   ┌─────────┐
+│ PLAN │ → │ CLIMB │ → │ VERIFY │ → │ DELIVER │
+└──────┘   └───────┘   └────────┘   └─────────┘
+ split,     one change   OOT, by a    promote or
+ EDA, plan  per iter.    Verifier     reject
+```
+
+## Rules
+
+These hold even if no reference file is read.
+
+1. **The split is locked before anyone looks at the data**, and the OOT belongs to the Verification only:
+   nothing in `src/`, `notebooks/` or `experiments/` reads or names its period (R11).
+2. **The plan is the contract.** The Question, the Metric with its Min gain, the Budget and the Max drop are
+   fixed at approval; the backlog grows (a new idea is written in the plan before it runs), it is never
+   rewritten to fit a result.
+3. **One change per iteration**, named `H<n>` or `EA-it<NN>`, its code recoverable, its error analysis written.
+4. **Keep only a real gain**: `delta >= Min gain` and the 95% paired-bootstrap CI above zero, on the same valid
+   rows. Anything else is `rejected` and the code goes back to the best.
+5. **Leakage checks every iteration**; a failed one makes it `infeasible`, whatever its metric.
+6. **Author is not verifier.** The **verifier** agent judges the best on the OOT, once; `self-verified` fails V1.
+7. **The completion gate is a script**: `validate_verification.py` exits 0 before `deliver.py --decision
+   promote`.
+8. **The files hold the run.** The approval is `**Approved**: <date> - user: "<their words>"`; after a
+   compaction, resume from the files ([memory.md](references/memory.md)). A push, a deploy or a write to a
+   production table needs the user's explicit OK.
+
+## Phases
+
+| Phase | What it produces | Reference |
+| --- | --- | --- |
+| Plan | split lock, EDA on train, backlog, `plan.md` approved | [plan.md](references/plan.md), [eda.md](references/eda.md), [ideas.md](references/ideas.md), [patterns/split.md](references/patterns/split.md) |
+| Climb | the baseline, one iteration per hypothesis, the ledger, `report.md` | [loop.md](references/loop.md), [patterns/iteration.md](references/patterns/iteration.md), [error-analysis.md](references/error-analysis.md), [statistics.md](references/statistics.md) |
+| Verify | the Verification on OOT by the Verifier, `verification.md`, the gate | [verify.md](references/verify.md) |
+| Deliver | `delivery.md`; promote seeds `<slug>-mlops/plan.md` | below |
+
+Decisions, lessons and resuming: [memory.md](references/memory.md).
+
 ## Load points
 
 Read `.specs/LAB.md` `## Domain skills` and load the skills listed for each point when you reach it:

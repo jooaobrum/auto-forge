@@ -38,10 +38,10 @@ of challenger over champion). See [Data science end to end](docs/workflow.md#dat
 | `agent-spec-grilling` | interviews you until ideas become actionable items |
 | `agent-spec-writer` | drafts the plan every piece of work starts with, from a PRD, a design doc or context |
 | `agent-spec-lean` | build lane for app and code: plan, proof-backed checks, build, independent Verifier |
-| `agent-spec-pipeline` | build lane for data: a lean plan carrying a data contract, compiled to SQL, plus golden rows |
-| `agent-spec-experiment` | research lane: baseline, up to 3 variants, a per-case gate, a decision |
+| `agent-spec-pipeline` | build lane for data: lean's flow, with a data contract compiled to SQL and golden rows as a proof |
+| `agent-spec-experiment` | research lane: plan, baseline and up to 3 variants, a per-case gate, an independent Verifier, a decision |
 | `agent-spec-modeling` | research lane for a new model: split lock, EDA, baseline, one change per iteration, Verification on OOT |
-| `agent-spec-mlops` | build lane to production: config per environment, tested pipelines, trace, model card, promotion |
+| `agent-spec-mlops` | build lane to production: lean's flow to the production standard (D1-D10), then promotion |
 | `data-databricks-sql`, `ml-mlflow-log` | example domain skills your team replaces with its own know-how |
 | `verify-model`, `run-modeling-iteration` | the two agents below as skills, for platforms with no subagents (Databricks) |
 

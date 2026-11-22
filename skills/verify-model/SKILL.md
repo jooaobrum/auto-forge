@@ -64,10 +64,13 @@ the commit in `frozen.json`.
    `fresh-context` plus `**Fallback**: <platform> - <why>` in a new chat). `experiment.py deliver` refuses
    `adopt` or `promote` without it.
 
-## agent-spec-mlops
+## agent-spec-pipeline and agent-spec-mlops
 
-No Verifier: `validate_prod.py` (D1-D10) is its gate, and a person reviews the model card and the
-promotion. Do not invent a review.
+Both are agent-spec-lean: follow its `references/verify.md` as for any lean feature. The rules that decide the
+output are where your mutations go - the dedup, join or filter of a pipeline; the ported score, features and
+threshold of a model. For mlops, also recompute the trace's valid metric from the data it names; a gap above
+its tolerance is a finding. A person still reviews the model card and approves the promotion: that is not
+yours.
 
 ## Return
 

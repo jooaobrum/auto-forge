@@ -81,6 +81,8 @@ Training in dev gives the experiment's valid metric, traced to its round.
 2. The trace SHALL list every table read with its version, the commit and the hash of `uv.lock` (D8, D9)
 3. The config SHALL give `dev`, `qa` and `prod` each its own `catalog.schema`, and `src/` SHALL name none of them (D1, D2)
 4. WHEN a job runs THEN it SHALL call its pipeline with `--env` (D5)
+5. WHEN `churn.model` scores an account THEN it SHALL give the experiment's score
+   - tenure 2, 5 support calls → 1.0; tenure 30, no calls → not flagged at 0.5
 
 ## Proof
 

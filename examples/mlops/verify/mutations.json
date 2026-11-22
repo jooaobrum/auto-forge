@@ -1,0 +1,4 @@
+[{"file": "src/churn/model.py", "old": "score(r) >= threshold", "new": "score(r) < threshold",
+  "proof": "python3 -m pytest tests/test_model.py -k test_short_tenure_with_calls_is_risky", "label": "threshold comparison inverted"},
+ {"file": "src/churn/model.py", "old": "0.15 * calls", "new": "0.05 * calls",
+  "proof": "python3 -m pytest tests/test_model.py -k test_short_tenure_with_calls_is_risky", "label": "support-call weight changed"}]

@@ -1,4 +1,5 @@
 import re
+import subprocess
 
 from conftest import ROOT, SKILLS
 
@@ -71,6 +72,22 @@ def test_route_freeze_junit_deliver(host):
     host.write("app.py", "print(1)\n")
     host.commit("feat: sum")
     code, out = host.route("deliver", "a")
+    assert code == 2 and "not verified" in out and "no verification.md" in out
+    lean_verified(host, "a")
+    code, out = host.route("deliver", "a")
     assert code == 0, out
     text = (host.root / ".specs/features/a/delivery.md").read_text()
     assert "sees their total" in text and "route.py junit a" in text and "feat: sum" in text
+
+
+def lean_verified(host, slug: str) -> None:
+    """agent-spec-lean's evidence at HEAD: one check, its proof passing, the Verifier's report."""
+    head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=host.root, capture_output=True, check=True,
+                          text=True).stdout.strip()
+    folder = f".specs/features/{slug}"
+    host.write(f"{folder}/checks.md", "# a - checks\n\nMutations: 0\nBuild: none - test\n\n## Checks\n\n"
+               "**C1** - the total of 2 and 3 is 5\nProof: `true`\n")
+    host.write(f"{folder}/proofs.md", f"# a proofs\n\n**HEAD**: {head}\n**Tree**: clean\n\n"
+               "| Check | Proof | Ran | Passed | Result |\n| --- | --- | --- | --- | --- |\n| C1 | `true` | 1 | 1 | pass |\n")
+    host.write(f"{folder}/verification.md", "# a verification\n\n**Verdict**: PASS\n"
+               "**Verifier**: independent sub-agent (author != verifier)\n\n## Findings\n\nNone - probed C1\n")

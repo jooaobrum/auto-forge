@@ -3,7 +3,7 @@
 Usage: python3 route.py [--root <repo>] problem             # .specs/LAB.md ## Problem, before any model work
        python3 route.py [--root <repo>] freeze <slug>
        python3 route.py [--root <repo>] junit <slug>      # judges runs/main/*.xml
-       python3 route.py [--root <repo>] deliver <slug>    # needs a passing gate.json (junit or contract.py)
+       python3 route.py [--root <repo>] deliver <slug>    # a passing gate.json, and lean's validate_verification.py
 Research work is frozen, gated and delivered by agent-spec-experiment's experiment.py.
 Exit: 0 ok, 1 gate fail, 2 invalid input, 5 halted (.specs/HALT exists).
 """
@@ -34,7 +34,9 @@ def folder(root: Path, slug: str) -> Path:
     return root / ".specs" / "features" / slug
 
 
-LEAN_PLAN = Path(__file__).resolve().parents[2] / "agent-spec-lean" / "scripts" / "validate_plan.py"
+LEAN = Path(__file__).resolve().parents[2] / "agent-spec-lean" / "scripts"
+LEAN_PLAN = LEAN / "validate_plan.py"
+LEAN_VERIFICATION = LEAN / "validate_verification.py"
 
 
 def _plan_text(root: Path, slug: str) -> str:
@@ -94,11 +96,11 @@ def problem(root: Path) -> tuple[list[str], list[str]]:
     return findings, warnings
 
 
-def lean_plan(root: Path, slug: str) -> tuple[int, str]:
-    """A build-lane plan is a lean plan: agent-spec-lean's validate_plan.py judges its structure."""
-    if not LEAN_PLAN.exists():
-        raise RouteError(f"{LEAN_PLAN} is missing - install agent-spec-lean next to agent-spec-router")
-    done = subprocess.run([sys.executable, str(LEAN_PLAN), slug, "--root", str(root)], check=False,
+def lean(script: Path, root: Path, slug: str) -> tuple[int, str]:
+    """Build-lane work goes through agent-spec-lean: its validate_plan.py and validate_verification.py judge it."""
+    if not script.exists():
+        raise RouteError(f"{script} is missing - install agent-spec-lean next to agent-spec-router")
+    done = subprocess.run([sys.executable, str(script), slug, "--root", str(root)], check=False,
                           capture_output=True, text=True)
     return done.returncode, (done.stdout + done.stderr).strip()
 
@@ -108,7 +110,7 @@ def freeze(root: Path, slug: str) -> str:
     if not spec_md.APPROVED.search(text):
         raise RouteError("no **Approved**: line - the user approves the plan first")
     if spec_md.field(text, "Lane").lower() == "build":
-        code, out = lean_plan(root, slug)
+        code, out = lean(LEAN_PLAN, root, slug)
         if code != 0:
             raise RouteError(f"the plan does not pass agent-spec-lean's validate_plan.py:\n{out}")
     commit = _git(root, "rev-parse", "HEAD").strip()
@@ -154,6 +156,11 @@ def deliver(root: Path, slug: str) -> str:
     if last["exit"] != 0:
         raise RouteError("the last gate failed: " + "; ".join(last["findings"]))
     text = _plan_text(root, slug)
+    if spec_md.field(text, "Lane").lower() == "build":
+        code, out = lean(LEAN_VERIFICATION, root, slug)
+        if code != 0:
+            raise RouteError("the work is not verified - agent-spec-lean's checks, proofs and Verifier "
+                             f"(references/verify.md) first; validate_verification.py says:\n{out}")
     goal = spec_md.section(text, "Goal") or spec_md.section(text, "Problem")
     since = json.loads((work / "frozen.json").read_text())["commit"] if (work / "frozen.json").exists() else None
     commits = _git(root, "log", "--oneline", f"{since}..HEAD").strip() if since else "not frozen"

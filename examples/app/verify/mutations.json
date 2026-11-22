@@ -1,0 +1,4 @@
+[{"file": "app/cli.py", "old": "for n in numbers)", "new": "for n in numbers[1:])",
+  "proof": "python3 -m pytest e2e/test_cli.py -k test_user_sums_two_numbers", "label": "first number dropped"},
+ {"file": "app/cli.py", "old": "print(total(sys.argv[1:]))", "new": "print(total(sys.argv[2:]))",
+  "proof": "python3 -m pytest e2e/test_cli.py -k test_user_sums_two_numbers", "label": "arguments read from the wrong offset"}]

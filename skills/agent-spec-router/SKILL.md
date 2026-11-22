@@ -108,7 +108,9 @@ passes through here.
 
 For build work, run `python3 <skill-dir>/scripts/route.py freeze <slug>` once the plan has its
 `**Approved**:` line; it refuses a plan that does not pass agent-spec-lean's `validate_plan.py`. For an app,
-judge the e2e JUnit with `route.py junit <slug>` (results in `runs/main/*.xml`). Close with `route.py deliver <slug>` once a gate passed and report `delivery.md`.
+judge the e2e JUnit with `route.py junit <slug>` (results in `runs/main/*.xml`). Every build lane - app,
+pipeline, mlops - goes through agent-spec-lean's checks, build and Verifier: `route.py deliver <slug>` refuses
+until the lane's gate passed and lean's `validate_verification.py <slug>` exits 0. Report `delivery.md`.
 
 ## Halt
 

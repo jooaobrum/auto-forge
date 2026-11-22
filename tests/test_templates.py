@@ -79,3 +79,27 @@ def test_experiment_has_a_reference_per_phase_like_lean():
         assert f"| {phase} |" in skill and f"(references/{ref})" in skill, phase
     assert (SKILLS / "agent-spec-experiment" / "references" / "memory.md").exists()
     assert "## Rules" in skill and "Author is not verifier" in skill
+
+
+def test_every_lane_has_rules_and_a_phase_per_reference():
+    lean = "../agent-spec-lean/references/"
+    for lane, phases in (
+        ("agent-spec-lean", {"Plan": "references/plan.md", "Checks": "references/checks.md",
+                             "Build": "references/build.md", "Verify": "references/verify.md"}),
+        ("agent-spec-experiment", {"Plan": "references/plan.md", "Run": "references/run.md",
+                                   "Verify": "references/verify.md"}),
+        ("agent-spec-modeling", {"Plan": "references/plan.md", "Climb": "references/loop.md",
+                                 "Verify": "references/verify.md"}),
+        ("agent-spec-pipeline", {"Plan": "references/plan.md", "Checks": lean + "checks.md",
+                                 "Build": lean + "build.md", "Verify": lean + "verify.md"}),
+        ("agent-spec-mlops", {"Plan": "references/plan.md", "Checks": lean + "checks.md",
+                              "Build": "references/standard.md", "Verify": lean + "verify.md",
+                              "Promote": "references/promote.md"}),
+    ):
+        skill = (SKILLS / lane / "SKILL.md").read_text()
+        assert "## Rules" in skill and "## Phases" in skill, lane
+        for phase, ref in phases.items():
+            row = next((line for line in skill.splitlines() if line.startswith(f"| {phase} |")), "")
+            assert f"({ref})" in row, (lane, phase)
+            assert (SKILLS / lane / ref).resolve().exists(), (lane, ref)
+        assert "memory.md" in skill, lane

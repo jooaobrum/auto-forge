@@ -1,0 +1,4 @@
+[{"file": "pipeline.py", "old": "int(row[\"version\"]) > int(latest", "new": "int(row[\"version\"]) < int(latest",
+  "proof": "python3 -m pytest tests/test_pipeline.py -k test_latest_version_wins", "label": "oldest version kept"},
+ {"file": "pipeline.py", "old": "(int(r[\"order_id\"]), r[\"status\"], now)", "new": "(int(r[\"order_id\"]), \"open\", now)",
+  "proof": "python3 -m pytest tests/test_pipeline.py -k test_cancelled_order_kept", "label": "status not carried to the output"}]

@@ -55,8 +55,10 @@ lives in ordinary skills. Each lane loads the ones LAB.md lists at three points:
 - **Pipeline** - agent-spec-pipeline: the plan, a lean plan, carries a **data contract** (columns with type, required,
   unique, accepted values; rules for row count, freshness, custom SQL) and **golden rows**. A script compiles
   it into one SQL query; the agent runs the pipeline on a small fixture in a dev schema, runs the query there
-  (Databricks notebook, Genie, SQL warehouse) and the gate requires zero violations.
-- **A model to production** - agent-spec-mlops: the production standard, then a per-slice promotion; see
+  (Databricks notebook, Genie, SQL warehouse) and the gate requires zero violations. The rest is lean's:
+  checks (the contract gate is one of them), build, and the independent Verifier.
+- **A model to production** - agent-spec-mlops: lean's plan, checks, build and Verifier, with the production
+  standard (`validate_prod` D1-D10) among the proofs, then a per-slice promotion; see
   [Data science end to end](#data-science-end-to-end).
 
 ## Research lane
@@ -118,7 +120,8 @@ standard-library scripts. The rules come from the gates of ds-factory's `exp-hil
 | 2 Modeling | approve the plan | human | `**Approved**:` in your words (rule A1) |
 | 2 Modeling | `validate_round` R0-R11 | script | the round followed the pattern (below) |
 | 2 Modeling | `validate_verification` V0-V7 | script | an independent Verifier (a subagent, or a declared fallback) judged the best experiment on OOT: PASS |
-| 3 MLOps | `validate_prod` D1-D10 | script | the production standard (below) |
+| 3 MLOps | `validate_prod` D1-D10 | script | the production standard (below), a proof of lean's checks |
+| 3 MLOps | lean's `validate_verification` | script | every check's proof green at HEAD, the mutations killed, the Verifier's findings closed |
 | 4 Promotion | `promote.py gate` | script | per slice: no slice regresses, target gain with a CI above zero |
 | 4 Promotion | OK the alias swap | human | challenger becomes champion, your words recorded by `promote.py approve` |
 | 5 After | `experiment.py gate` | script | baseline, at most 3 variants, per-Case gate with cost limits |
@@ -196,10 +199,11 @@ only where a clean context pays off, and `agents/` holds two:
 
 | Agent | Dispatched by | Reads | Writes | Returns |
 | --- | --- | --- | --- | --- |
-| `verifier` | modeling and lean, at Verify | what the lane's `verify.md` names: plan, ledger or proofs, the code at `HEAD` | the lane's `verification.md` (modeling: its code in `verify/`) | the gate's last line, the verdict, the findings |
+| `verifier` | every lane, at Verify: lean (app, pipeline, mlops), experiment, modeling | what the lane's `verify.md` names: plan, ledger or proofs, the code at `HEAD` | the lane's `verification.md` (modeling: its code in `verify/`) | the gate's last line, the verdict, the findings |
 | `modeling-iteration-runner` | modeling, once per iteration | the approved plan, the ledger, the best's code, one hypothesis | `experiments/<id>.*`, `error_analysis/<id>.*`, one ledger entry | that ledger row |
 
-The mlops lane has no Verifier: `validate_prod` is its gate and you review the model card and the promotion.
+The mlops lane is lean: the Verifier probes the ported logic and the trace; you still review the model card and
+approve the promotion. `route.py deliver` refuses any build-lane work until lean's `validate_verification` passes.
 
 | Platform | Subagents | How |
 | --- | --- | --- |
